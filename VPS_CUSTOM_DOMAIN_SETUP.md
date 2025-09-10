@@ -52,7 +52,7 @@ The custom domain page component renders the website using the UniversalTemplate
      ```
      Type: A
      Name: @ (or your domain)
-     Value: YOUR_VPS_IP_ADDRESS
+     Value: 147.93.30.162
      TTL: 3600 (or default)
      ```
    - Optionally add a CNAME for www:
@@ -84,6 +84,7 @@ The custom domain page component renders the website using the UniversalTemplate
    ```bash
    # Test with curl
    curl -H "Host: example.com" http://localhost:5000
+   curl -H "Host: example.com" http://147.93.30.162
    ```
 
 ## Troubleshooting
@@ -182,10 +183,13 @@ The custom domain is stored in the Website collection:
 ```bash
 # Test custom domain endpoint
 curl -H "Host: test.example.com" http://localhost:5000
+curl -H "Host: test.example.com" http://147.93.30.162
 
 # Test with different hostnames
 curl -H "Host: www.example.com" http://localhost:5000
 curl -H "Host: example.com" http://localhost:5000
+curl -H "Host: www.example.com" http://147.93.30.162
+curl -H "Host: example.com" http://147.93.30.162
 ```
 
 ## Monitoring

@@ -810,7 +810,7 @@ function DashboardContent() {
                                 <div className="text-blue-800 font-bold">1. Add A Record</div>
                                 <div className="text-blue-700">Type: A</div>
                                 <div className="text-blue-700">Name: @ (or your domain)</div>
-                                <div className="text-blue-700">Value: YOUR_VPS_IP_ADDRESS</div>
+                                <div className="text-blue-700">Value: 147.93.30.162</div>
                                 <div className="text-blue-600 text-[10px] mt-1">💡 DNS propagation may take up to 24 hours</div>
                               </div>
                             </div>
@@ -976,7 +976,7 @@ function DashboardContent() {
                      <div className="bg-green-100 p-2 rounded font-mono text-sm border border-green-200">
                        <div className="text-green-800 font-bold">Type: A</div>
                        <div className="text-green-800">Name: @ (or your domain)</div>
-                       <div className="text-green-800">Value: YOUR_VPS_IP_ADDRESS</div>
+                       <div className="text-green-800">Value: 147.93.30.162</div>
                        <div className="text-green-800">TTL: 3600 (or default)</div>
                        <div className="text-green-700 text-[10px] mt-1">✅ ADD THIS A RECORD</div>
                      </div>

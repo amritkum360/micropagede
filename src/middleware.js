@@ -52,12 +52,14 @@ export function middleware(req) {
   console.log('🌐 Has subdomain:', hasSubdomain);
   console.log('🌐 Is custom domain:', isCustomDomain);
 
-  // Handle custom domains
+  // Handle custom domains - For VPS setup, let nginx handle it
   if (isCustomDomain) {
-    console.log('🌐 Processing custom domain:', host);
-    url.pathname = `/custom-domain/${host}`;
-    console.log('🌐 Rewriting to:', url.pathname);
-    return NextResponse.rewrite(url);
+    console.log('🌐 Custom domain detected:', host);
+    console.log('🌐 For VPS setup, nginx will handle this domain directly');
+    
+    // For VPS setup, nginx catches custom domains and forwards to backend
+    // So we don't need to do anything here - just let it pass through
+    return NextResponse.next();
   }
 
   // If no subdomain detected, show main site
@@ -84,6 +86,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - custom domains (handled by nginx on VPS)
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],

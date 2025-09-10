@@ -35,7 +35,8 @@ export function middleware(req) {
     url.pathname.startsWith('/reset-password') ||
     url.pathname.startsWith('/debug') ||
     url.pathname.startsWith('/subdomain/') ||
-    url.pathname.startsWith('/published/')
+    url.pathname.startsWith('/published/') ||
+    url.pathname.startsWith('/custom-domain/')
   ) {
     console.log('🌐 Skipping for admin/subdomain route:', url.pathname);
     return NextResponse.next();
@@ -52,14 +53,16 @@ export function middleware(req) {
   console.log('🌐 Has subdomain:', hasSubdomain);
   console.log('🌐 Is custom domain:', isCustomDomain);
 
-  // Handle custom domains - For VPS setup, let nginx handle it
+  // Handle custom domains - Rewrite to custom domain page
   if (isCustomDomain) {
     console.log('🌐 Custom domain detected:', host);
-    console.log('🌐 For VPS setup, nginx will handle this domain directly');
+    console.log('🌐 Rewriting to custom domain page');
     
-    // For VPS setup, nginx catches custom domains and forwards to backend
-    // So we don't need to do anything here - just let it pass through
-    return NextResponse.next();
+    // Rewrite to custom domain page
+    url.pathname = `/custom-domain/${host}`;
+    console.log('🌐 Rewriting to:', url.pathname);
+    
+    return NextResponse.rewrite(url);
   }
 
   // If no subdomain detected, show main site

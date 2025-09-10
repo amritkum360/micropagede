@@ -798,23 +798,20 @@ function DashboardContent() {
                             {dnsStatus[website._id]?.configured ? dnsStatus[website._id]?.message : (
                               <span>
                                 Step 1: Go to your domain provider (GoDaddy, Namecheap, etc.)<br />
-                                Step 2: Find DNS/Nameserver settings<br />
-                                Step 3: Replace with: ns1.vercel-dns.com and ns2.vercel-dns.com
+                                Step 2: Find DNS settings and add A record<br />
+                                Step 3: Point A record to your VPS IP address
                               </span>
                             )}
                           </p>
-                          {dnsStatus[website._id]?.nameservers && dnsStatus[website._id]?.nameservers.length > 0 && !dnsStatus[website._id]?.configured && (
+                          {!dnsStatus[website._id]?.configured && (
                             <div className="mt-2">
-                              <p className="text-xs text-red-600 mb-1">❌ Current nameservers (WRONG):</p>
-                              <div className="text-xs font-mono bg-red-100 p-2 rounded border border-red-200">
-                                {dnsStatus[website._id]?.nameservers.map((ns, index) => (
-                                  <div key={index} className="text-red-700">{ns}</div>
-                                ))}
-                              </div>
-                              <p className="text-xs text-green-600 mt-2 mb-1">✅ Replace with these Vercel nameservers:</p>
-                              <div className="text-xs font-mono bg-green-100 p-2 rounded border border-green-200">
-                                <div className="text-green-800 font-bold">ns1.vercel-dns.com</div>
-                                <div className="text-green-800 font-bold">ns2.vercel-dns.com</div>
+                              <p className="text-xs text-blue-600 mb-1">📋 VPS Setup Instructions:</p>
+                              <div className="text-xs font-mono bg-blue-100 p-2 rounded border border-blue-200">
+                                <div className="text-blue-800 font-bold">1. Add A Record</div>
+                                <div className="text-blue-700">Type: A</div>
+                                <div className="text-blue-700">Name: @ (or your domain)</div>
+                                <div className="text-blue-700">Value: YOUR_VPS_IP_ADDRESS</div>
+                                <div className="text-blue-600 text-[10px] mt-1">💡 DNS propagation may take up to 24 hours</div>
                               </div>
                             </div>
                           )}
@@ -971,24 +968,27 @@ function DashboardContent() {
                  </div>
                  
                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                   <h4 className="text-sm font-medium text-blue-800 mb-2 font-heading">📋 DNS Configuration Instructions</h4>
+                   <h4 className="text-sm font-medium text-blue-800 mb-2 font-heading">📋 VPS DNS Configuration Instructions</h4>
                    <div className="space-y-3 text-xs text-blue-700 font-body">
                      <p><strong>Step 1:</strong> Go to your domain provider (like GoDaddy, Namecheap, etc.)</p>
-                     <p><strong>Step 2:</strong> Find &quot;DNS Settings&quot; or &quot;Nameservers&quot;</p>
-                     <p><strong>Step 3:</strong> You will see current nameservers like:</p>
-                     <div className="bg-red-100 p-2 rounded font-mono text-sm border border-red-200">
-                       <div className="text-red-700">pdns04.domaincontrol.com</div>
-                       <div className="text-red-700">pdns03.domaincontrol.com</div>
-                       <div className="text-red-600 text-[10px] mt-1">❌ DELETE THESE OLD ONES</div>
-                     </div>
-                     <p><strong>Step 4:</strong> Replace them with these new nameservers:</p>
+                     <p><strong>Step 2:</strong> Find &quot;DNS Settings&quot; or &quot;DNS Management&quot;</p>
+                     <p><strong>Step 3:</strong> Add a new A record with these settings:</p>
                      <div className="bg-green-100 p-2 rounded font-mono text-sm border border-green-200">
-                       <div className="font-bold text-green-800">ns1.vercel-dns.com</div>
-                       <div className="font-bold text-green-800">ns2.vercel-dns.com</div>
-                       <div className="text-green-700 text-[10px] mt-1">✅ ADD THESE NEW ONES</div>
+                       <div className="text-green-800 font-bold">Type: A</div>
+                       <div className="text-green-800">Name: @ (or your domain)</div>
+                       <div className="text-green-800">Value: YOUR_VPS_IP_ADDRESS</div>
+                       <div className="text-green-800">TTL: 3600 (or default)</div>
+                       <div className="text-green-700 text-[10px] mt-1">✅ ADD THIS A RECORD</div>
+                     </div>
+                     <p><strong>Step 4:</strong> Optionally add a CNAME for www:</p>
+                     <div className="bg-blue-100 p-2 rounded font-mono text-sm border border-blue-200">
+                       <div className="text-blue-800 font-bold">Type: CNAME</div>
+                       <div className="text-blue-800">Name: www</div>
+                       <div className="text-blue-800">Value: yourdomain.com</div>
+                       <div className="text-blue-700 text-[10px] mt-1">💡 OPTIONAL</div>
                      </div>
                      <p className="text-[11px] text-blue-600 mt-2">
-                       💡 <strong>Note:</strong> This may take 15-30 minutes to work. Keep checking &quot;Check DNS&quot; button.
+                       💡 <strong>Note:</strong> DNS propagation may take up to 24 hours. Keep checking &quot;Check DNS&quot; button.
                      </p>
                    </div>
                  </div>

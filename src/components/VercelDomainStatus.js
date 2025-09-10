@@ -103,7 +103,7 @@ const VPSDomainStatus = ({ domain, onStatusUpdate }) => {
             <h4 className="text-xs font-medium text-gray-700 mb-2">VPS Setup Instructions:</h4>
             <div className="space-y-2 text-xs text-gray-600">
               <div>
-                <strong>1. DNS Configuration:</strong> Point your domain's A record to your VPS IP address.
+                <strong>1. DNS Configuration:</strong> Point your domain&apos;s A record to your VPS IP address.
               </div>
               <div>
                 <strong>2. DNS Propagation:</strong> Changes may take up to 24 hours to propagate.
@@ -117,7 +117,7 @@ const VPSDomainStatus = ({ domain, onStatusUpdate }) => {
           {!status.dnsStatus?.configured && (
             <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
               <p className="text-xs text-yellow-700">
-                <strong>Setup Required:</strong> Configure your domain's A record to point to your VPS IP address to make your website accessible.
+                <strong>Setup Required:</strong> Configure your domain&apos;s A record to point to your VPS IP address to make your website accessible.
               </p>
             </div>
           )}

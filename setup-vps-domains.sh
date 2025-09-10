@@ -68,7 +68,7 @@ server {
 
 # ------------------------------
 # Universal Custom Domain Handler (HTTP)
-# This catches ALL custom domains and forwards to frontend
+# This catches ALL custom domains and forwards to backend
 # ------------------------------
 server {
     listen 80;
@@ -76,11 +76,11 @@ server {
     
     # Add debugging headers
     add_header X-Custom-Domain "true" always;
-    add_header X-Frontend-Port "3000" always;
+    add_header X-Backend-Port "5000" always;
     add_header X-Requested-Host $host always;
     
     location / {
-        proxy_pass http://localhost:3000;   # Frontend Next.js app
+        proxy_pass http://localhost:5000;   # Backend with website data
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -140,7 +140,7 @@ fi
 # Test custom domain functionality
 echo "🧪 Testing custom domain functionality..."
 TEST_DOMAIN="test.example.com"
-RESPONSE=$(curl -s -H "Host: $TEST_DOMAIN" http://localhost:3000)
+RESPONSE=$(curl -s -H "Host: $TEST_DOMAIN" http://localhost:5000)
 
 if [ $? -eq 0 ]; then
     echo "✅ Custom domain test successful"
@@ -157,14 +157,14 @@ echo ""
 echo "📋 What this setup does:"
 echo "   ✅ Automatically handles ALL custom domains"
 echo "   ✅ No need to edit nginx config for new domains"
-echo "   ✅ All custom domains point to your frontend (port 3000)"
+echo "   ✅ All custom domains point to your backend (port 5000)"
 echo "   ✅ Main domain (aboutwebsite.in) points to frontend (port 3000)"
 echo ""
 echo "🔧 How it works:"
 echo "   1. User adds custom domain in dashboard"
 echo "   2. User configures DNS A record to point to your VPS IP"
-echo "   3. Nginx automatically catches the domain and forwards to frontend"
-echo "   4. Frontend renders the correct website based on domain"
+echo "   3. Nginx automatically catches the domain and forwards to backend"
+echo "   4. Backend serves the correct website based on domain"
 echo ""
 echo "📝 Next steps:"
 echo "   1. Deploy your updated backend code"
@@ -172,7 +172,7 @@ echo "   2. Restart your backend server"
 echo "   3. Test with a real custom domain"
 echo ""
 echo "🧪 Test commands:"
-echo "   curl -H 'Host: yourdomain.com' http://localhost:3000"
+echo "   curl -H 'Host: yourdomain.com' http://localhost:5000"
 echo "   curl -H 'Host: yourdomain.com' http://147.93.30.162"
 echo ""
 echo "📖 For troubleshooting, check:"

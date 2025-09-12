@@ -956,6 +956,57 @@ export const AuthProvider = ({ children }) => {
     }
   }, [loading, token, user, isAuthenticated]);
 
+  // Request SSL Certificate
+  const requestSSL = async (websiteId, domain) => {
+    if (!token) throw new Error('Not authenticated');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/ssl/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ websiteId, domain }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to request SSL certificate');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Request SSL error:', error);
+      throw error;
+    }
+  };
+
+  // Get SSL status for domain
+  const getSSLStatus = async (domain) => {
+    if (!token) throw new Error('Not authenticated');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/ssl/status/${domain}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to get SSL status');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Get SSL status error:', error);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     token,
@@ -989,6 +1040,8 @@ export const AuthProvider = ({ children }) => {
     fixOnboardingStatus,
     checkSubdomain,
     checkCustomDomain,
+    requestSSL,
+    getSSLStatus,
     isAuthenticated,
     debugAuth,
   };

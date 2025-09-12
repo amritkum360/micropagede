@@ -62,6 +62,36 @@ export default function UniversalTemplate({ data, sectionOrder = null }) {
     };
   }, []);
 
+
+ // Update document title and favicon based on business branding
+  useEffect(() => {
+    if (data) {
+      // Update document title
+      const businessName = data.businessName || 'AboutWebsite';
+      const tagline = data.tagline ? ` - ${data.tagline}` : '';
+      document.title = `${businessName}${tagline}`;
+
+      // Update favicon
+      if (data.favicon) {
+        const favicon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.href = data.favicon;
+        favicon.type = 'image/x-icon';
+        if (!document.querySelector('link[rel="icon"]')) {
+          document.head.appendChild(favicon);
+        }
+      }
+
+      // Update meta description
+      const metaDescription = document.querySelector('meta[name="description"]') || document.createElement('meta');
+      metaDescription.name = 'description';
+      metaDescription.content = data.tagline || `${businessName} - Professional website and services`;
+      if (!document.querySelector('meta[name="description"]')) {
+        document.head.appendChild(metaDescription);
+      }
+    }
+  }, [data]);
+
   // Smooth scroll to section function
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);

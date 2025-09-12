@@ -31,7 +31,7 @@ import CelebrationAnimation from '@/components/ui/CelebrationAnimation';
 import LoadingIndicator from '@/components/ui/LoadingIndicator';
 
 function DashboardContent() {
-  const { user, logout, getWebsites, deleteWebsite, publishWebsite, unpublishWebsite, updateWebsite, getDomains, saveDomain, updateDomain, checkDomainDNS, getWebsite, checkCustomDomain } = useAuth();
+  const { user, logout, getWebsites, deleteWebsite, publishWebsite, unpublishWebsite, updateWebsite, getDomains, saveDomain, updateDomain, checkDomainDNS, getWebsite, checkCustomDomain, requestSSL, getSSLStatus } = useAuth();
   const { navigateWithLoader } = useNavigation();
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +45,8 @@ function DashboardContent() {
   const [dnsStatus, setDnsStatus] = useState({});
   const [checkingDNS, setCheckingDNS] = useState({});
   const [customDomainStatus, setCustomDomainStatus] = useState({ checking: false, available: null, message: '' });
+  const [sslStatus, setSslStatus] = useState({});
+  const [requestingSSL, setRequestingSSL] = useState({});
   const [showCelebration, setShowCelebration] = useState(false);
   const celebrationShown = useRef(false);
   const { showSuccess, showError, showWarning, showInfo, notifications, removeNotification } = useNotification();
@@ -411,6 +413,38 @@ function DashboardContent() {
     }
   }, [checkDomainDNS]);
 
+  const handleRequestSSL = useCallback(async (websiteId, domain) => {
+    setRequestingSSL(prev => ({ ...prev, [websiteId]: true }));
+    
+    try {
+      const result = await requestSSL(websiteId, domain);
+      setSslStatus(prev => ({
+        ...prev,
+        [websiteId]: {
+          hasRequest: true,
+          status: 'pending'
+        }
+      }));
+      showSuccess('✅ SSL certificate request submitted successfully! We will process it within 24 hours.');
+    } catch (error) {
+      console.error('Failed to request SSL:', error);
+      showError('❌ Failed to request SSL certificate. Please try again.');
+    } finally {
+      setRequestingSSL(prev => ({ ...prev, [websiteId]: false }));
+    }
+  }, [requestSSL, showSuccess, showError]);
+
+  // Check SSL status for domains
+  const checkSSLStatus = useCallback(async (domain) => {
+    try {
+      const result = await getSSLStatus(domain);
+      return result;
+    } catch (error) {
+      console.error('Failed to check SSL status:', error);
+      return { hasRequest: false, status: null };
+    }
+  }, [getSSLStatus]);
+
   // Auto-check DNS status after websites load
   useEffect(() => {
     if (websites.length > 0) {
@@ -421,9 +455,20 @@ function DashboardContent() {
             handleCheckDNS(website._id, website.data.customDomain);
           }, 2000); // 2 second delay
         }
+        
+        // Check SSL status for custom domains
+        if (website.data?.customDomain && !sslStatus[website._id]) {
+          setTimeout(async () => {
+            const sslResult = await checkSSLStatus(website.data.customDomain);
+            setSslStatus(prev => ({
+              ...prev,
+              [website._id]: sslResult
+            }));
+          }, 3000); // 3 second delay
+        }
       });
     }
-  }, [websites, dnsStatus, handleCheckDNS]);
+  }, [websites, dnsStatus, sslStatus, handleCheckDNS, checkSSLStatus]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
@@ -462,7 +507,7 @@ function DashboardContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">AboutWebsite Dashboard</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">AboutWebsite Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -710,12 +755,39 @@ function DashboardContent() {
                                   {website.data.customDomain}
                                 </a>
                               </div>
-                              <button
-                                onClick={() => handleRemoveDomain(website._id)}
-                                className="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 border border-red-200 rounded hover:bg-red-50 self-start"
-                              >
-                                <span className="font-body">Remove Your Own Domain</span>
-                              </button>
+                              <div className="flex gap-2">
+                                {sslStatus[website._id]?.status === 'applied' ? (
+                                  <div className="flex items-center text-sm text-green-600 font-medium px-3 py-1 border border-green-200 rounded bg-green-50">
+                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="font-body">SSL Applied</span>
+                                  </div>
+                                ) : sslStatus[website._id]?.hasRequest ? (
+                                  <div className="flex items-center text-sm text-yellow-600 font-medium px-3 py-1 border border-yellow-200 rounded bg-yellow-50">
+                                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></div>
+                                    <span className="font-body">SSL Requested</span>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => handleRequestSSL(website._id, website.data.customDomain)}
+                                    disabled={requestingSSL[website._id] || sslStatus[website._id]?.hasRequest}
+                                    className="text-sm text-blue-600 hover:text-blue-700 font-medium px-3 py-1 border border-blue-200 rounded hover:bg-blue-50 self-start disabled:opacity-50 disabled:cursor-not-allowed"
+                                  >
+                                    {requestingSSL[website._id] ? (
+                                      <span className="font-body">Requesting...</span>
+                                    ) : (
+                                      <span className="font-body">Request SSL</span>
+                                    )}
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => handleRemoveDomain(website._id)}
+                                  className="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 border border-red-200 rounded hover:bg-red-50 self-start"
+                                >
+                                  <span className="font-body">Remove Your Own Domain</span>
+                                </button>
+                              </div>
                             </div>
                           ) : (
                             <div className="flex flex-col gap-2">
@@ -783,35 +855,70 @@ function DashboardContent() {
                             : 'bg-red-100'
                         }`}>
                           <div className="flex items-center text-sm mb-2">
-                            <div className={`w-3 h-3 rounded-full mr-3 ${
+                            {/* <div className={`w-3 h-3 rounded-full mr-3 ${
                               dnsStatus[website._id]?.configured 
                                 ? 'bg-green-500' 
                                 : 'bg-red-500'
                             }`}></div>
                             <span className={dnsStatus[website._id]?.configured ? 'text-green-700' : 'text-red-700'}>
-                              {dnsStatus[website._id]?.configured ? '✅ DNS Configured Correctly' : '❌ Custom Domain not configured - Follow steps below'}
-                            </span>
+                              {dnsStatus[website._id]?.configured ? '✅ DNS Configured Correctly' : '❌ DNS Configuration Issues'}
+                            </span> */}
                           </div>
-                          <p className={`text-sm ${
+                          {/* <p className={`text-sm ${
                             dnsStatus[website._id]?.configured ? 'text-green-600' : 'text-red-600'
                           }`}>
-                            {dnsStatus[website._id]?.configured ? dnsStatus[website._id]?.message : (
-                              <span>
-                                Step 1: Go to your domain provider (GoDaddy, Namecheap, etc.)<br />
-                                Step 2: Find DNS settings and add A record<br />
-                                Step 3: Point A record to your VPS IP address
-                              </span>
-                            )}
-                          </p>
+                            {dnsStatus[website._id]?.message}
+                          </p> */}
+                          
+                          {/* Detailed DNS Information */}
+                          {/* {dnsStatus[website._id]?.details && (
+                            <div className="mt-3 space-y-2"> */}
+                              {/* A Record Status */}
+                              
+                              
+                              {/* CNAME Record Status */}
+                              {/* <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium">CNAME (www):</span>
+                                <div className="flex items-center">
+                                  {dnsStatus[website._id].details.cnameRecord?.found ? (
+                                    <>
+                                      <div className={`w-2 h-2 rounded-full mr-2 ${
+                                        dnsStatus[website._id].details.cnameRecord?.correct ? 'bg-green-500' : 'bg-yellow-500'
+                                      }`}></div>
+                                      <span className={dnsStatus[website._id].details.cnameRecord?.correct ? 'text-green-700' : 'text-yellow-700'}>
+                                        {dnsStatus[website._id].details.cnameRecord?.value}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="w-2 h-2 rounded-full mr-2 bg-gray-400"></div>
+                                      <span className="text-gray-600">Not found (optional)</span>
+                                    </>
+                                  )}
+                                </div> */}
+                              {/* </div> */}
+                            
+                     
+                          
                           {!dnsStatus[website._id]?.configured && (
-                            <div className="mt-2">
-                              <p className="text-xs text-blue-600 mb-1">📋 VPS Setup Instructions:</p>
-                              <div className="text-xs font-mono bg-blue-100 p-2 rounded border border-blue-200">
+                            <div className="mt-3">
+                              <p className="text-xs text-blue-600 mb-2">📋 DNS Setup Instructions:</p>
+                              <div className="text-xs font-mono bg-blue-100 p-2 rounded border border-blue-200 space-y-1">
                                 <div className="text-blue-800 font-bold">1. Add A Record</div>
                                 <div className="text-blue-700">Type: A</div>
-                                <div className="text-blue-700">Name: @ (or your domain)</div>
+                                <div className="text-blue-700">Name: @</div>
                                 <div className="text-blue-700">Value: 147.93.30.162</div>
-                                <div className="text-blue-600 text-[10px] mt-1">💡 DNS propagation may take up to 24 hours</div>
+                                <div className="text-blue-600 text-[10px] mt-1">💡 This is required for your domain to work</div>
+                              </div>
+                              {/* <div className="text-xs font-mono bg-gray-100 p-2 rounded border border-gray-200 space-y-1 mt-2">
+                                <div className="text-gray-800 font-bold">2. Add CNAME Record (Optional)</div>
+                                <div className="text-gray-700">Type: CNAME</div>
+                                <div className="text-gray-700">Name: www</div>
+                                <div className="text-gray-700">Value: {website.data?.customDomain}</div>
+                                <div className="text-gray-600 text-[10px] mt-1">💡 This makes www.yourdomain.com work</div>
+                              </div> */}
+                              <div className="text-xs text-blue-600 mt-2">
+                                ⏰ DNS propagation may take up to 24 hours
                               </div>
                             </div>
                           )}
@@ -980,13 +1087,7 @@ function DashboardContent() {
                        <div className="text-green-800">TTL: 3600 (or default)</div>
                        <div className="text-green-700 text-[10px] mt-1">✅ ADD THIS A RECORD</div>
                      </div>
-                     <p><strong>Step 4:</strong> Optionally add a CNAME for www:</p>
-                     <div className="bg-blue-100 p-2 rounded font-mono text-sm border border-blue-200">
-                       <div className="text-blue-800 font-bold">Type: CNAME</div>
-                       <div className="text-blue-800">Name: www</div>
-                       <div className="text-blue-800">Value: yourdomain.com</div>
-                       <div className="text-blue-700 text-[10px] mt-1">💡 OPTIONAL</div>
-                     </div>
+                    
                      <p className="text-[11px] text-blue-600 mt-2">
                        💡 <strong>Note:</strong> DNS propagation may take up to 24 hours. Keep checking &quot;Check DNS&quot; button.
                      </p>

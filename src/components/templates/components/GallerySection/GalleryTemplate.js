@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function GalleryTemplate({ section }) {
@@ -32,15 +31,21 @@ export default function GalleryTemplate({ section }) {
                   <div key={index} className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:rotate-1 border-2 border-transparent hover:border-opacity-20" style={{ borderColor: 'var(--primary-color, #3B82F6)' }}>
                     {imageSrc ? (
                       <div className="h-48 overflow-hidden">
-                        <Image
+                        <img
                           src={imageSrc}
                           alt={image.title || 'Gallery image'}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                          className="w-full h-full object-cover"
                           onError={(e) => {
+                            console.error('❌ Gallery template image load error:', {
+                              src: imageSrc,
+                              imageData: image.image,
+                              error: e
+                            });
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
+                          }}
+                          onLoad={() => {
+                            console.log('✅ Gallery template image loaded successfully:', imageSrc);
                           }}
                         />
                         <div className="w-full h-full flex items-center justify-center theme-gradient" style={{display: 'none'}}>

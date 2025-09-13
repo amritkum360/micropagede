@@ -19,6 +19,16 @@ const nextConfig = {
         hostname: '*.aboutwebsite.in',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'api.aboutwebsite.in',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.aboutwebsite.in',
+        pathname: '/uploads/**',
+      },
     ],
   },
   // External packages for server components

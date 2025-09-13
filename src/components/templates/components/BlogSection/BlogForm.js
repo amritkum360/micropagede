@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useRef } from 'react';
-import Image from 'next/image';
+import React, { useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 
 export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }) {
   const fileInputRefs = useRef({});
   const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [currentPostIndex, setCurrentPostIndex] = useState(null);
 
   const addPost = () => {
     const newPosts = [...(section.posts || []), {
@@ -29,6 +31,25 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
     const newPosts = [...section.posts];
     newPosts[index] = { ...newPosts[index], [field]: value };
     onInputChange(sectionKey, 'posts', newPosts);
+  };
+
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Blog image selected from gallery:', selectedImage);
+    if (currentPostIndex !== null) {
+      updatePost(currentPostIndex, 'image', selectedImage);
+    }
+    setCurrentPostIndex(null);
+  };
+
+  const openImageModal = (index) => {
+    setCurrentPostIndex(index);
+    setShowImageModal(true);
+  };
+
+  const handleUploadNew = () => {
+    if (currentPostIndex !== null) {
+      fileInputRefs.current[`image-${currentPostIndex}`]?.click();
+    }
   };
 
   const handleImageUpload = async (index, event) => {
@@ -175,9 +196,11 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
                 />
 
                 {/* Post Image Upload */}
-                <div>
+                <div className="space-y-2">
                   <label className="block text-xs text-gray-600 mb-1">Blog Post Image</label>
-                  <div className="flex items-center space-x-2">
+                  
+                  {/* File Upload Option */}
+                  <div>
                     <input
                       ref={(el) => fileInputRefs.current[`image-${index}`] = el}
                       type="file"
@@ -187,28 +210,33 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
                     />
                     <button
                       type="button"
-                      onClick={() => fileInputRefs.current[`image-${index}`]?.click()}
+                      onClick={() => openImageModal(index)}
                       disabled={post.image?.loading}
-                      className={`px-2 py-1 text-xs rounded transition-colors ${
-                        post.image?.loading
-                          ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                          : 'bg-blue-500 text-white hover:bg-blue-600'
+                      className={`w-full flex items-center justify-center space-x-2 px-3 py-2 border-2 border-dashed border-blue-300 rounded-lg transition-all duration-200 cursor-pointer group ${
+                        post.image?.loading 
+                          ? 'bg-gray-100 border-gray-200 cursor-not-allowed' 
+                          : 'bg-blue-50 hover:bg-blue-100 hover:border-blue-400'
                       }`}
                     >
                       {post.image?.loading ? (
-                        <div className="flex items-center space-x-1">
-                          <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Uploading...</span>
-                        </div>
+                        <>
+                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-xs font-medium text-gray-600">Uploading...</span>
+                        </>
                       ) : (
-                        'Choose Image'
+                        <>
+                          <svg className="w-4 h-4 text-blue-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                          </svg>
+                          <span className="text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                            Choose Blog Image
+                          </span>
+                        </>
                       )}
                     </button>
-                    {post.image && !post.image.loading && (
-                      <span className="text-xs text-gray-600 truncate">
-                        {post.image.isServerImage ? 'Image uploaded to server' : 'Image selected'}
-                      </span>
-                    )}
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      Supported formats: JPG, PNG, GIF, SVG • Max size: 5MB
+                    </p>
                   </div>
                 </div>
 
@@ -216,28 +244,46 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
                 {isImageUploaded(post.image) && !post.image?.loading && (
                   <div className="mt-2">
                     <label className="block text-xs text-gray-600 mb-1">Image Preview:</label>
-                    <div className="w-20 h-16 border border-gray-200 rounded overflow-hidden bg-white">
-                      <Image
-                        src={getImageSrc(post.image)}
-                        alt={`Blog post ${index + 1} image`}
-                        fill
-                        className="object-cover"
-                        sizes="80px"
+                    <div className="w-24 h-18 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                      <img
+                        src={getImageSrc(post.image)} 
+                        alt={`Blog post ${index + 1} image`} 
+                        className="w-full h-full object-cover"
                         onError={(e) => {
+                          console.error('❌ Blog image load error:', {
+                            src: getImageSrc(post.image),
+                            imageData: post.image,
+                            error: e
+                          });
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
+                        }}
+                        onLoad={() => {
+                          console.log('✅ Blog image loaded successfully:', getImageSrc(post.image));
                         }}
                       />
                       <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-50" style={{display: 'none'}}>
                         Invalid Image
                       </div>
                     </div>
-                    {/* Image Metadata */}
-                    {getImageMetadata(post.image) && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        {getImageMetadata(post.image).fileName} ({(getImageMetadata(post.image).fileSize / 1024).toFixed(1)}KB)
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-green-600 font-medium">
+                          {post.image?.isServerImage ? '✓ Image uploaded to server' : '✓ Image uploaded successfully'}
+                        </span>
+                        {getImageMetadata(post.image) && (
+                          <span className="text-xs text-gray-500">
+                            {getImageMetadata(post.image).fileName} ({(getImageMetadata(post.image).fileSize / 1024).toFixed(1)}KB)
+                          </span>
+                        )}
                       </div>
-                    )}
+                      <button
+                        onClick={() => updatePost(index, 'image', '')}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -260,6 +306,19 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
           )}
         </div>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => {
+          setShowImageModal(false);
+          setCurrentPostIndex(null);
+        }}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Blog Image"
+        currentImage={currentPostIndex !== null ? section.posts?.[currentPostIndex]?.image : null}
+      />
     </div>
   );
 }

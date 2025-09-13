@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useRef } from 'react';
-import Image from 'next/image';
+import React, { useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 
 export default function HeaderForm({ section, onInputChange, sectionKey = 'header' }) {
   const fileInputRef = useRef(null);
   const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const addMenuItem = () => {
     const newNavigation = [...(section.navigation || []), { name: 'New Menu', link: '#new' }];
@@ -77,6 +78,19 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
           throw new Error('Server response missing image URL');
         }
         
+        // Test the image URL accessibility
+        console.log('🔍 Testing image URL accessibility:', logoData.url);
+        try {
+          const testResponse = await fetch(logoData.url, { method: 'HEAD' });
+          console.log('🔍 Image URL test response:', {
+            status: testResponse.status,
+            ok: testResponse.ok,
+            headers: Object.fromEntries(testResponse.headers.entries())
+          });
+        } catch (testError) {
+          console.error('🔍 Image URL test failed:', testError);
+        }
+        
         onInputChange(sectionKey, 'logo', logoData);
         
         // Verify the data was set
@@ -95,6 +109,15 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
     fileInputRef.current.click();
   };
 
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Image selected from gallery:', selectedImage);
+    onInputChange(sectionKey, 'logo', selectedImage);
+  };
+
+  const handleUploadNew = () => {
+    triggerFileInput();
+  };
+
   // Get image metadata for display
   const logoMetadata = getImageMetadata(section.logo);
 
@@ -108,7 +131,7 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
           <div>
             <label className="block text-xs text-gray-600 mb-2">Upload logo from your device:</label>
             
-            {/* Custom Upload Button */}
+            {/* Choose Image Button */}
             <div className="relative">
               <input
                 ref={fileInputRef}
@@ -118,7 +141,7 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
                 className="hidden"
               />
               <button
-                onClick={triggerFileInput}
+                onClick={() => setShowImageModal(true)}
                 disabled={section.logo?.loading}
                 className={`w-full flex items-center justify-center space-x-2 px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg transition-all duration-200 cursor-pointer group ${
                   section.logo?.loading 
@@ -134,10 +157,10 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
                 ) : (
                   <>
                     <svg className="w-5 h-5 text-blue-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                     </svg>
                     <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700">
-                      Choose Logo File
+                      Choose Logo Image
                     </span>
                   </>
                 )}
@@ -154,15 +177,21 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
             <div className="mt-3">
               <label className="block text-xs text-gray-600 mb-2">Logo Preview:</label>
               <div className="w-24 h-14 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                <Image
+                <img
                   src={getImageSrc(section.logo)} 
                   alt="Logo preview" 
-                  width={96}
-                  height={56}
                   className="w-full h-full object-contain"
                   onError={(e) => {
+                    console.error('❌ Image load error:', {
+                      src: getImageSrc(section.logo),
+                      logoData: section.logo,
+                      error: e
+                    });
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Image loaded successfully:', getImageSrc(section.logo));
                   }}
                 />
                 <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-50" style={{display: 'none'}}>
@@ -302,6 +331,16 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
           )}
         </div>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Logo Image"
+        currentImage={section.logo}
+      />
     </div>
   );
 }

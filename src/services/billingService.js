@@ -3,7 +3,7 @@
  * Handles all billing-related API calls
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 /**
  * Get user's billing history

@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
+import { getImageSrc } from '@/utils/imageUtils';
 
 export default function ServicesTemplate({ section }) {
   return (
@@ -34,18 +34,24 @@ export default function ServicesTemplate({ section }) {
                                      {/* Main Card */}
                    <div className="relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-dashed" style={{ borderColor: 'var(--primary-color, #3B82F6)' }}>
                      {/* Product Image OR Icon */}
-                     {service.image ? (
+                     {service.image && getImageSrc(service.image) ? (
                        <div className="mb-6">
                          <div className="w-full h-48 rounded-2xl overflow-hidden">
-                           <Image
-                             src={service.image}
+                           <img
+                             src={getImageSrc(service.image)}
                              alt={service.title || 'Product image'}
-                             width={400}
-                             height={192}
                              className="w-full h-full object-cover"
                              onError={(e) => {
+                               console.error('❌ Service template image load error:', {
+                                 src: getImageSrc(service.image),
+                                 imageData: service.image,
+                                 error: e
+                               });
                                e.target.style.display = 'none';
                                e.target.nextSibling.style.display = 'flex';
+                             }}
+                             onLoad={() => {
+                               console.log('✅ Service template image loaded successfully:', getImageSrc(service.image));
                              }}
                            />
                            <div className="w-full h-full flex items-center justify-center" style={{display: 'none', background: `linear-gradient(135deg, var(--primary-color, #3B82F6) / 20%, var(--secondary-color, #8B5CF6) / 20%)` }}>

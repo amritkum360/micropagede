@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
 import { defaultUniversalData } from '../../TemplateBuilderComponents/defaultData';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 
 export default function CustomSectionForm4({ section, onInputChange, sectionKey, isOpen }) {
   const fileInputRef = useRef(null);
   const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [currentImageBlockIndex, setCurrentImageBlockIndex] = useState(null);
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -68,6 +71,59 @@ export default function CustomSectionForm4({ section, onInputChange, sectionKey,
 
   const triggerFileInput = () => {
     fileInputRef.current.click();
+  };
+
+  // Handle image selection from gallery
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Custom section image block selected from gallery:', selectedImage);
+    if (currentImageBlockIndex !== null) {
+      const currentBlocks = section.contentBlocks || [];
+      const updatedBlocks = currentBlocks.map((b, i) => 
+        i === currentImageBlockIndex ? { ...b, image: selectedImage } : b
+      );
+      onInputChange(sectionKey, 'contentBlocks', updatedBlocks);
+    }
+    setShowImageModal(false);
+    setCurrentImageBlockIndex(null);
+  };
+
+  // Handle upload new image
+  const handleUploadNew = () => {
+    if (currentImageBlockIndex !== null) {
+      // Create a temporary file input for this specific block
+      const tempFileInput = document.createElement('input');
+      tempFileInput.type = 'file';
+      tempFileInput.accept = 'image/*';
+      tempFileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          try {
+            if (!token) {
+              alert('Please login to upload images');
+              return;
+            }
+            const imageData = await uploadImageToServer(file, token, 5);
+            const currentBlocks = section.contentBlocks || [];
+            const updatedBlocks = currentBlocks.map((b, i) => 
+              i === currentImageBlockIndex ? { ...b, image: imageData } : b
+            );
+            onInputChange(sectionKey, 'contentBlocks', updatedBlocks);
+          } catch (error) {
+            console.error('Image upload failed:', error);
+            alert(error.message);
+          }
+        }
+        setShowImageModal(false);
+        setCurrentImageBlockIndex(null);
+      };
+      tempFileInput.click();
+    }
+  };
+
+  // Open image modal for specific block
+  const openImageModal = (blockIndex) => {
+    setCurrentImageBlockIndex(blockIndex);
+    setShowImageModal(true);
   };
 
   // Get image metadata for display
@@ -312,13 +368,13 @@ export default function CustomSectionForm4({ section, onInputChange, sectionKey,
                           className="hidden"
                         />
                         <button
-                          onClick={triggerFileInput}
-                          className="w-full flex items-center justify-center space-x-2 px-4 py-2 border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 text-sm"
+                          onClick={() => openImageModal(index)}
+                          className="w-full flex items-center justify-center space-x-2 px-4 py-2 border-2 border-dashed border-slate-300 rounded-lg bg-slate-50 hover:bg-slate-100 text-sm transition-all duration-200 group"
                         >
-                          <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-slate-500 group-hover:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z" />
                           </svg>
-                          <span>Upload Image</span>
+                          <span className="text-slate-600 group-hover:text-slate-800">Choose Image</span>
                         </button>
                       </div>
                     </div>
@@ -628,6 +684,19 @@ export default function CustomSectionForm4({ section, onInputChange, sectionKey,
           <option value="yellow-50">Light Yellow</option>
         </select>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => {
+          setShowImageModal(false);
+          setCurrentImageBlockIndex(null);
+        }}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Image for Content Block"
+        currentImage={currentImageBlockIndex !== null ? (section.contentBlocks?.[currentImageBlockIndex]?.image) : null}
+      />
     </div>
   );
 }

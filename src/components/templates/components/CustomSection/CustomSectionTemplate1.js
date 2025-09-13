@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function CustomSectionTemplate1({ section }) {
@@ -44,12 +43,22 @@ export default function CustomSectionTemplate1({ section }) {
                   style={{ borderRadius: `${section.imageBorderRadius || 16}px` }}
                 >
                   {section.image ? (
-                    <Image
+                    <img
                       src={getImageSrc(section.image)}
                       alt={section.title || 'Custom section image'}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      onError={(e) => {
+                        console.error('❌ Custom section template image load error:', {
+                          src: getImageSrc(section.image),
+                          imageData: section.image,
+                          error: e
+                        });
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                      onLoad={() => {
+                        console.log('✅ Custom section template image loaded successfully:', getImageSrc(section.image));
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-100 via-gray-50 to-white flex items-center justify-center relative">

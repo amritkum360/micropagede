@@ -1,9 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
+import { getImageSrc } from '@/utils/imageUtils';
 
 export default function PortfolioTemplate({ section }) {
+  // Debug logging
+  console.log('🖼️ PortfolioTemplate - Section data:', section);
+  console.log('🖼️ PortfolioTemplate - Projects:', section.projects);
+  
   return (
     <section className="py-12 sm:py-14 md:py-16 px-4" style={{ background: `linear-gradient(90deg, var(--accent-color, #F59E0B) / 5%, var(--primary-color, #3B82F6) / 5%)` }} role="region" aria-label="Portfolio" id='portfolio'>
       <div className="container mx-auto">
@@ -21,7 +25,16 @@ export default function PortfolioTemplate({ section }) {
           </div>
           {section.projects && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-              {section.projects.map((project, index) => (
+              {section.projects.map((project, index) => {
+                // Debug each project
+                console.log(`🖼️ PortfolioTemplate - Project ${index}:`, {
+                  title: project.title,
+                  image: project.image,
+                  imageSrc: getImageSrc(project.image),
+                  hasImage: !!project.image
+                });
+                
+                return (
                 <div key={index} className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 relative group">
                   <div className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ 
                     background: `linear-gradient(45deg, var(--primary-color, #3B82F6), var(--secondary-color, #8B5CF6), var(--accent-color, #F59E0B))`,
@@ -30,17 +43,23 @@ export default function PortfolioTemplate({ section }) {
                   }}></div>
                   <div className="relative bg-white rounded-2xl sm:rounded-3xl p-1">
                     <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden">
-                      {project.image ? (
+                      {project.image && getImageSrc(project.image) ? (
                         <div className="h-40 sm:h-48 overflow-hidden">
-                          <Image
-                            src={project.image}
+                          <img
+                            src={getImageSrc(project.image)}
                             alt={project.title || 'Project image'}
-                            width={400}
-                            height={192}
                             className="w-full h-full object-cover"
                             onError={(e) => {
+                              console.error('❌ Portfolio template image load error:', {
+                                src: getImageSrc(project.image),
+                                imageData: project.image,
+                                error: e
+                              });
                               e.target.style.display = 'none';
                               e.target.nextSibling.style.display = 'flex';
+                            }}
+                            onLoad={() => {
+                              console.log('✅ Portfolio template image loaded successfully:', getImageSrc(project.image));
                             }}
                           />
                           <div className="w-full h-full flex items-center justify-center theme-gradient" style={{display: 'none'}}>
@@ -68,7 +87,8 @@ export default function PortfolioTemplate({ section }) {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

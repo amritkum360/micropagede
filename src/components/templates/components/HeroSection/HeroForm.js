@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useRef } from 'react';
-import Image from 'next/image';
+import React, { useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 
 export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }) {
   const fileInputRef = useRef(null);
   const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
 
   // Template selection handler
   const handleTemplateChange = (templateNumber) => {
@@ -73,6 +74,15 @@ export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }
 
   const triggerFileInput = () => {
     fileInputRef.current.click();
+  };
+
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Hero background image selected from gallery:', selectedImage);
+    onInputChange(sectionKey, 'backgroundImage', selectedImage);
+  };
+
+  const handleUploadNew = () => {
+    triggerFileInput();
   };
 
   const addCTAButton = () => {
@@ -174,7 +184,7 @@ export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }
                 className="hidden"
               />
               <button
-                onClick={triggerFileInput}
+                onClick={() => setShowImageModal(true)}
                 disabled={section.backgroundImage?.loading}
                 className={`w-full flex items-center justify-center space-x-2 px-4 py-3 border-2 border-dashed border-purple-300 rounded-lg transition-all duration-200 cursor-pointer group ${
                   section.backgroundImage?.loading 
@@ -190,7 +200,7 @@ export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }
                 ) : (
                   <>
                     <svg className="w-5 h-5 text-purple-500 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                     </svg>
                     <span className="text-sm font-medium text-purple-600 group-hover:text-purple-700">
                       Choose Background Image
@@ -210,15 +220,21 @@ export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }
             <div className="mt-3">
               <label className="block text-xs text-gray-600 mb-2">Background Image Preview:</label>
               <div className="w-full h-32 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                <Image
+                <img
                   src={getImageSrc(section.backgroundImage)} 
                   alt="Background preview" 
-                  width={400}
-                  height={128}
                   className="w-full h-full object-cover"
                   onError={(e) => {
+                    console.error('❌ Hero background image load error:', {
+                      src: getImageSrc(section.backgroundImage),
+                      imageData: section.backgroundImage,
+                      error: e
+                    });
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Hero background image loaded successfully:', getImageSrc(section.backgroundImage));
                   }}
                 />
                 <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-50" style={{display: 'none'}}>
@@ -352,6 +368,16 @@ export default function HeroForm({ section, onInputChange, sectionKey = 'hero' }
           )}
         </div>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Background Image"
+        currentImage={section.backgroundImage}
+      />
     </div>
   );
 }

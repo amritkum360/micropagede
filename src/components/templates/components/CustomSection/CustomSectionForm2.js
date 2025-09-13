@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useRef } from 'react';
-import Image from 'next/image';
+import React, { useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 import { defaultUniversalData } from '../../TemplateBuilderComponents/defaultData';
 
 export default function CustomSectionForm2({ section, onInputChange, sectionKey, isOpen }) {
   const fileInputRef = useRef(null);
   const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -58,6 +59,15 @@ export default function CustomSectionForm2({ section, onInputChange, sectionKey,
         onInputChange(sectionKey, 'image', '');
       }
     }
+  };
+
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Custom section image selected from gallery:', selectedImage);
+    onInputChange(sectionKey, 'image', selectedImage);
+  };
+
+  const handleUploadNew = () => {
+    fileInputRef.current?.click();
   };
 
   const removeImage = () => {
@@ -132,7 +142,7 @@ export default function CustomSectionForm2({ section, onInputChange, sectionKey,
                 className="hidden"
               />
               <button
-                onClick={triggerFileInput}
+                onClick={() => setShowImageModal(true)}
                 disabled={section.image?.loading}
                 className={`w-full flex items-center justify-center space-x-2 px-4 py-3 border-2 border-dashed border-green-300 rounded-lg transition-all duration-200 cursor-pointer group ${
                   section.image?.loading 
@@ -168,15 +178,21 @@ export default function CustomSectionForm2({ section, onInputChange, sectionKey,
             <div className="mt-3">
               <label className="block text-xs text-gray-600 mb-2">Image Preview:</label>
               <div className="w-full h-32 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                <Image
+                <img
                   src={getImageSrc(section.image)} 
                   alt="Section preview" 
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
+                    console.error('❌ Custom section image load error:', {
+                      src: getImageSrc(section.image),
+                      imageData: section.image,
+                      error: e
+                    });
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Custom section image loaded successfully:', getImageSrc(section.image));
                   }}
                 />
                 <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-50" style={{display: 'none'}}>
@@ -282,6 +298,16 @@ export default function CustomSectionForm2({ section, onInputChange, sectionKey,
           <option value="yellow-50">Light Yellow</option>
         </select>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Section Image"
+        currentImage={section.image}
+      />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function BlogTemplate({ section }) {
@@ -29,15 +28,21 @@ export default function BlogTemplate({ section }) {
                   <div key={index} className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     {imageSrc ? (
                       <div className="h-48 overflow-hidden">
-                        <Image
+                        <img
                           src={imageSrc}
                           alt={post.title || 'Blog post image'}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                          className="w-full h-full object-cover"
                           onError={(e) => {
+                            console.error('❌ Blog template image load error:', {
+                              src: imageSrc,
+                              imageData: post.image,
+                              error: e
+                            });
                             e.target.style.display = 'none';
                             e.target.nextSibling.style.display = 'flex';
+                          }}
+                          onLoad={() => {
+                            console.log('✅ Blog template image loaded successfully:', imageSrc);
                           }}
                         />
                         <div className="w-full h-full flex items-center justify-center theme-gradient" style={{display: 'none'}}>

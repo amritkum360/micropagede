@@ -2,7 +2,7 @@
  * Service for handling image uploads to the server
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 /**
  * Upload an image file to the server
@@ -16,7 +16,10 @@ export const uploadImage = async (file, token) => {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      hasToken: !!token
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0,
+      tokenStart: token ? token.substring(0, 20) + '...' : 'none',
+      apiUrl: `${API_BASE_URL}/upload`
     });
 
     // Validate file
@@ -56,6 +59,12 @@ export const uploadImage = async (file, token) => {
     if (!response.ok) {
       const errorData = await response.json();
       console.error('📤 ImageUploadService - Upload failed:', errorData);
+      
+      // Handle specific limit error
+      if (response.status === 400 && errorData.limit) {
+        throw new Error(`Image limit reached! You can only upload ${errorData.limit} images. You currently have ${errorData.current} images. Please delete some images first.`);
+      }
+      
       throw new Error(errorData.message || 'Upload failed');
     }
 

@@ -1,9 +1,15 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
+import ImageGalleryModal from '../../../ui/ImageGalleryModal';
 
 export default function ServicesForm({ section, onInputChange, sectionKey = 'services' }) {
   const fileInputRefs = useRef({});
+  const { token } = useAuth();
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(null);
 
   const addService = () => {
     const newItems = [...(section.items || []), { 
@@ -30,6 +36,25 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
     onInputChange(sectionKey, 'items', newItems);
   };
 
+  const handleImageSelect = (selectedImage) => {
+    console.log('🖼️ Service image selected from gallery:', selectedImage);
+    if (currentServiceIndex !== null) {
+      updateService(currentServiceIndex, 'image', selectedImage);
+    }
+    setCurrentServiceIndex(null);
+  };
+
+  const openImageModal = (index) => {
+    setCurrentServiceIndex(index);
+    setShowImageModal(true);
+  };
+
+  const handleUploadNew = () => {
+    if (currentServiceIndex !== null) {
+      fileInputRefs.current[`image-${currentServiceIndex}`]?.click();
+    }
+  };
+
   const addFeature = (serviceIndex) => {
     const newItems = [...section.items];
     newItems[serviceIndex].features = [...(newItems[serviceIndex].features || []), 'New Feature'];
@@ -48,11 +73,68 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
     onInputChange(sectionKey, 'items', newItems);
   };
 
-  const handleImageUpload = (index, event) => {
+  const handleImageUpload = async (index, event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      updateService(index, 'image', imageUrl);
+      try {
+        if (!token) {
+          alert('Please login to upload images');
+          return;
+        }
+
+        console.log('🚀 Starting service image upload:', {
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type,
+          serviceIndex: index
+        });
+
+        // Clear any existing image data first
+        updateService(index, 'image', '');
+
+        // Show loading state
+        const loadingData = {
+          loading: true,
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type
+        };
+        updateService(index, 'image', loadingData);
+
+        // Upload image to server
+        const imageData = await uploadImageToServer(file, token, 5);
+        console.log('✅ Service image upload successful:', imageData);
+        
+        // Verify the data structure
+        if (!imageData.url) {
+          throw new Error('Server response missing image URL');
+        }
+        
+        // Test the image URL accessibility
+        console.log('🔍 Testing service image URL accessibility:', imageData.url);
+        try {
+          const testResponse = await fetch(imageData.url, { method: 'HEAD' });
+          console.log('🔍 Service image URL test response:', {
+            status: testResponse.status,
+            ok: testResponse.ok,
+            headers: Object.fromEntries(testResponse.headers.entries())
+          });
+        } catch (testError) {
+          console.error('🔍 Service image URL test failed:', testError);
+        }
+        
+        updateService(index, 'image', imageData);
+        
+        // Verify the data was set
+        console.log('🔍 Service image data after setting:', imageData);
+        console.log('🔍 Service items after update:', section.items);
+        
+      } catch (error) {
+        console.error('❌ Service image upload failed:', error);
+        alert(error.message);
+        // Remove loading state on error
+        updateService(index, 'image', '');
+      }
     }
   };
 
@@ -135,9 +217,11 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
                     </div>
                     
                     {/* Image Upload */}
-                    <div>
+                    <div className="space-y-2">
                       <label className="block text-xs text-gray-600 mb-1">Choose Product Image (Optional)</label>
-                      <div className="flex items-center space-x-2">
+                      
+                      {/* File Upload Option */}
+                      <div>
                         <input
                           ref={(el) => fileInputRefs.current[`image-${index}`] = el}
                           type="file"
@@ -147,17 +231,81 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
                         />
                         <button
                           type="button"
-                          onClick={() => fileInputRefs.current[`image-${index}`]?.click()}
-                          className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                          onClick={() => openImageModal(index)}
+                          disabled={service.image?.loading}
+                          className={`w-full flex items-center justify-center space-x-2 px-3 py-2 border-2 border-dashed border-blue-300 rounded-lg transition-all duration-200 cursor-pointer group ${
+                            service.image?.loading 
+                              ? 'bg-gray-100 border-gray-200 cursor-not-allowed' 
+                              : 'bg-blue-50 hover:bg-blue-100 hover:border-blue-400'
+                          }`}
                         >
-                          Choose Image
+                          {service.image?.loading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                              <span className="text-xs font-medium text-gray-600">Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 text-blue-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                              </svg>
+                              <span className="text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                                Choose Service Image
+                              </span>
+                            </>
+                          )}
                         </button>
-                        {service.image && (
-                          <span className="text-xs text-gray-600 truncate">
-                            {service.image.includes('blob:') ? 'Image selected' : 'Image uploaded'}
-                          </span>
-                        )}
+                        <p className="text-xs text-gray-500 mt-1 text-center">
+                          Supported formats: JPG, PNG, GIF, SVG • Max size: 5MB
+                        </p>
                       </div>
+                      
+                      {/* Image Preview */}
+                      {isImageUploaded(service.image) && !service.image?.loading && (
+                        <div className="mt-2">
+                          <label className="block text-xs text-gray-600 mb-1">Image Preview:</label>
+                          <div className="w-20 h-16 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                            <img
+                              src={getImageSrc(service.image)} 
+                              alt="Service preview" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                console.error('❌ Service image load error:', {
+                                  src: getImageSrc(service.image),
+                                  imageData: service.image,
+                                  error: e
+                                });
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                              onLoad={() => {
+                                console.log('✅ Service image loaded successfully:', getImageSrc(service.image));
+                              }}
+                            />
+                            <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 bg-gray-50" style={{display: 'none'}}>
+                              Invalid Image
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between mt-1">
+                            <div className="flex flex-col">
+                              <span className="text-xs text-green-600 font-medium">
+                                {service.image?.isServerImage ? '✓ Image uploaded to server' : '✓ Image uploaded successfully'}
+                              </span>
+                              {getImageMetadata(service.image) && (
+                                <span className="text-xs text-gray-500">
+                                  {getImageMetadata(service.image).fileName} ({(getImageMetadata(service.image).fileSize / 1024).toFixed(1)}KB)
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => updateService(index, 'image', '')}
+                              className="text-xs text-red-500 hover:text-red-700 font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -252,6 +400,19 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
           )}
         </div>
       </div>
+
+      {/* Image Gallery Modal */}
+      <ImageGalleryModal
+        isOpen={showImageModal}
+        onClose={() => {
+          setShowImageModal(false);
+          setCurrentServiceIndex(null);
+        }}
+        onSelectImage={handleImageSelect}
+        onUploadNew={handleUploadNew}
+        title="Select Service Image"
+        currentImage={currentServiceIndex !== null ? section.items?.[currentServiceIndex]?.image : null}
+      />
     </div>
   );
 }

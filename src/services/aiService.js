@@ -3,6 +3,7 @@
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
+require('dotenv').config();
 
 /**
  * Generate website content using AI

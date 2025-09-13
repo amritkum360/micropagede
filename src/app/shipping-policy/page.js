@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function ShippingPolicy() {
   return (
@@ -17,12 +18,12 @@ export default function ShippingPolicy() {
               </div>
               <span className="text-2xl font-bold text-white" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
             </div>
-            <a 
+            <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -336,7 +337,7 @@ export default function ShippingPolicy() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                   <li>Posting the updated policy on our website</li>
                   <li>Sending email notifications to active users</li>
-                  <li>Updating the "Last updated" date</li>
+                  <li>Updating the &quot;Last updated&quot; date</li>
                 </ul>
                 <p className="text-gray-300 leading-relaxed">
                   Continued use of our services after policy changes constitutes acceptance of the new terms.

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getImageSrc } from '@/utils/imageUtils';
 import { deleteImage } from '@/services/imageUploadService';
@@ -21,7 +21,7 @@ export default function ImageGalleryModal({
   const { token } = useAuth();
 
   // Fetch user's uploaded images
-  const fetchUserImages = async () => {
+  const fetchUserImages = useCallback(async () => {
     if (!token) {
       setError('Please login to view your images');
       return;
@@ -61,7 +61,7 @@ export default function ImageGalleryModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   // Fetch images when modal opens
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function ImageGalleryModal({
       fetchUserImages();
       setSelectedImage(currentImage);
     }
-  }, [isOpen, currentImage]);
+  }, [isOpen, currentImage, fetchUserImages]);
 
   // Handle image selection
   const handleImageSelect = (image) => {

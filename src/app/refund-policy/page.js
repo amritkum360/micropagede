@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function RefundPolicy() {
   return (
@@ -17,12 +18,12 @@ export default function RefundPolicy() {
               </div>
               <span className="text-2xl font-bold text-white" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
             </div>
-            <a 
+            <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -235,7 +236,7 @@ export default function RefundPolicy() {
                   This policy complies with applicable consumer protection laws. However, by using our services, you acknowledge that:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
-                  <li>Our services are provided "as is" without warranties</li>
+                  <li>Our services are provided &quot;as is&quot; without warranties</li>
                   <li>You have read and understood this refund policy</li>
                   <li>You agree to the no-refund terms</li>
                   <li>You accept the risks associated with our services</li>
@@ -256,7 +257,7 @@ export default function RefundPolicy() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                   <li>Posting the updated policy on our website</li>
                   <li>Sending email notifications to active users</li>
-                  <li>Updating the "Last updated" date</li>
+                  <li>Updating the &quot;Last updated&quot; date</li>
                 </ul>
                 <p className="text-gray-300 leading-relaxed">
                   Continued use of our services after policy changes constitutes acceptance of the new terms.

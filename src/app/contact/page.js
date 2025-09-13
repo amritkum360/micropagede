@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -81,12 +82,12 @@ Sent from AboutWebsite Contact Form`;
               </div>
               <span className="text-2xl font-bold text-white" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
             </div>
-            <a 
+            <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -366,7 +367,7 @@ Sent from AboutWebsite Contact Form`;
                   </div>
                   
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">What's the best way to reach you?</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">What&apos;s the best way to reach you?</h3>
                     <p className="text-gray-300 text-sm">Email is usually the fastest way to get help, but feel free to call for urgent matters.</p>
                   </div>
                 </div>

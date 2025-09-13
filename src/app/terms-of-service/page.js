@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function TermsOfService() {
   return (
@@ -17,12 +18,12 @@ export default function TermsOfService() {
               </div>
               <span className="text-2xl font-bold text-white" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
             </div>
-            <a 
+            <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -48,7 +49,7 @@ export default function TermsOfService() {
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-white mb-4">1. Acceptance of Terms</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Welcome to AboutWebsite ("we," "our," or "us"). These Terms of Service ("Terms") govern your use of our website building platform and services. By accessing or using our services, you agree to be bound by these Terms.
+                  Welcome to AboutWebsite (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These Terms of Service (&quot;Terms&quot;) govern your use of our website building platform and services. By accessing or using our services, you agree to be bound by these Terms.
                 </p>
                 <p className="text-gray-300 leading-relaxed">
                   If you do not agree to these Terms, please do not use our services. We reserve the right to modify these Terms at any time, and your continued use of our services constitutes acceptance of any changes.
@@ -151,7 +152,7 @@ export default function TermsOfService() {
                   <li>Provide accurate payment information</li>
                   <li>Authorize us to charge your payment method</li>
                   <li>Pay all applicable taxes and fees</li>
-                  <li>Comply with Razorpay's terms and conditions</li>
+                  <li>Comply with Razorpay&apos;s terms and conditions</li>
                 </ul>
 
                 <h3 className="text-xl font-semibold text-white mb-3">5.3 Billing and Renewal</h3>
@@ -187,7 +188,7 @@ export default function TermsOfService() {
 
                 <h3 className="text-xl font-semibold text-white mb-3">6.3 AI-Generated Content</h3>
                 <p className="text-gray-300 leading-relaxed">
-                  AI-generated content created through our platform is provided "as is" and we make no claims to ownership of such content. You are responsible for reviewing and ensuring the accuracy of all AI-generated content.
+                  AI-generated content created through our platform is provided &quot;as is&quot; and we make no claims to ownership of such content. You are responsible for reviewing and ensuring the accuracy of all AI-generated content.
                 </p>
               </section>
 
@@ -274,7 +275,7 @@ export default function TermsOfService() {
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-white mb-4">11. Disclaimers</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Our services are provided "as is" and "as available" without warranties of any kind. We disclaim all warranties, express or implied, including but not limited to:
+                  Our services are provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind. We disclaim all warranties, express or implied, including but not limited to:
                 </p>
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                   <li>Warranties of merchantability and fitness for a particular purpose</li>
@@ -313,7 +314,7 @@ export default function TermsOfService() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                   <li>Posting the updated Terms on our website</li>
                   <li>Sending you an email notification</li>
-                  <li>Updating the "Last updated" date</li>
+                  <li>Updating the &quot;Last updated&quot; date</li>
                 </ul>
                 <p className="text-gray-300 leading-relaxed">
                   Your continued use of our services after any changes constitutes acceptance of the new Terms.

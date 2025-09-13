@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export default function PrivacyPolicy() {
   return (
@@ -17,12 +18,12 @@ export default function PrivacyPolicy() {
               </div>
               <span className="text-2xl font-bold text-white" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
             </div>
-            <a 
+            <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -48,7 +49,7 @@ export default function PrivacyPolicy() {
               <section className="mb-8">
                 <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
                 <p className="text-gray-300 leading-relaxed mb-4">
-                  Welcome to AboutWebsite ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website building platform and services.
+                  Welcome to AboutWebsite (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website building platform and services.
                 </p>
                 <p className="text-gray-300 leading-relaxed">
                   By using our services, you agree to the collection and use of information in accordance with this policy.
@@ -211,7 +212,7 @@ export default function PrivacyPolicy() {
 
               {/* Children's Privacy */}
               <section className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-4">9. Children's Privacy</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">9. Children&apos;s Privacy</h2>
                 <p className="text-gray-300 leading-relaxed">
                   Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately.
                 </p>
@@ -234,7 +235,7 @@ export default function PrivacyPolicy() {
                 <ul className="list-disc list-inside text-gray-300 space-y-2 mb-4">
                   <li>Posting the new Privacy Policy on this page</li>
                   <li>Sending you an email notification</li>
-                  <li>Updating the "Last updated" date at the top of this policy</li>
+                  <li>Updating the &quot;Last updated&quot; date at the top of this policy</li>
                 </ul>
                 <p className="text-gray-300 leading-relaxed">
                   We encourage you to review this Privacy Policy periodically for any changes.

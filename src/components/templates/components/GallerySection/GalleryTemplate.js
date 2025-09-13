@@ -30,11 +30,12 @@ export default function GalleryTemplate({ section }) {
                 return (
                   <div key={index} className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:scale-110 hover:rotate-1 border-2 border-transparent hover:border-opacity-20" style={{ borderColor: 'var(--primary-color, #3B82F6)' }}>
                     {imageSrc ? (
-                      <div className="h-48 overflow-hidden">
+                      <div className="h-48 overflow-hidden relative bg-gray-100">
                         <img
                           src={imageSrc}
                           alt={image.title || 'Gallery image'}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
                           onError={(e) => {
                             console.error('❌ Gallery template image load error:', {
                               src: imageSrc,

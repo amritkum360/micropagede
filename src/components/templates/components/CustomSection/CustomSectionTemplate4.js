@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function CustomSectionTemplate4({ section }) {
@@ -51,9 +52,11 @@ export default function CustomSectionTemplate4({ section }) {
           <div key={index} className="mb-8">
             <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-lg">
               {block.image ? (
-                <img
+                <Image
                   src={getImageSrc(block.image)}
                   alt={block.alt || 'Content image'}
+                  width={400}
+                  height={256}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     console.error('❌ Custom section template block image load error:', {

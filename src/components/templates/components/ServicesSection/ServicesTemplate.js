@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function ServicesTemplate({ section }) {
@@ -37,9 +38,11 @@ export default function ServicesTemplate({ section }) {
                      {service.image && getImageSrc(service.image) ? (
                        <div className="mb-6">
                          <div className="w-full h-48 rounded-2xl overflow-hidden">
-                           <img
+                           <Image
                              src={getImageSrc(service.image)}
                              alt={service.title || 'Product image'}
+                             width={400}
+                             height={192}
                              className="w-full h-full object-cover"
                              onError={(e) => {
                                console.error('❌ Service template image load error:', {

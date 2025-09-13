@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
 import ImageGalleryModal from '../../../ui/ImageGalleryModal';
@@ -245,9 +246,11 @@ export default function BlogForm({ section, onInputChange, sectionKey = 'blog' }
                   <div className="mt-2">
                     <label className="block text-xs text-gray-600 mb-1">Image Preview:</label>
                     <div className="w-24 h-18 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                      <img
+                      <Image
                         src={getImageSrc(post.image)} 
                         alt={`Blog post ${index + 1} image`} 
+                        width={96}
+                        height={72}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           console.error('❌ Blog image load error:', {

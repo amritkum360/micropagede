@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function BlogTemplate({ section }) {
@@ -28,9 +29,11 @@ export default function BlogTemplate({ section }) {
                   <div key={index} className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                     {imageSrc ? (
                       <div className="h-48 overflow-hidden">
-                        <img
+                        <Image
                           src={imageSrc}
                           alt={post.title || 'Blog post image'}
+                          width={400}
+                          height={192}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             console.error('❌ Blog template image load error:', {

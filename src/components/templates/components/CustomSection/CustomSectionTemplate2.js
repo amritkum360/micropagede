@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function CustomSectionTemplate2({ section }) {
@@ -103,9 +104,11 @@ export default function CustomSectionTemplate2({ section }) {
                   style={{ borderRadius: `${section.imageBorderRadius || 16}px` }}
                 >
                   {section.image ? (
-                    <img
+                    <Image
                       src={getImageSrc(section.image)}
                       alt={section.title || 'Custom section image'}
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       onError={(e) => {
                         console.error('❌ Custom section template image load error:', {

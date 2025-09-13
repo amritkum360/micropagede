@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { getImageSrc } from '@/utils/imageUtils';
 
 export default function PortfolioTemplate({ section }) {
@@ -45,9 +46,11 @@ export default function PortfolioTemplate({ section }) {
                     <div className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden">
                       {project.image && getImageSrc(project.image) ? (
                         <div className="h-40 sm:h-48 overflow-hidden">
-                          <img
+                          <Image
                             src={getImageSrc(project.image)}
                             alt={project.title || 'Project image'}
+                            width={400}
+                            height={192}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               console.error('❌ Portfolio template image load error:', {

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
 import ImageGalleryModal from '../../../ui/ImageGalleryModal';
@@ -178,9 +179,11 @@ export default function CustomSectionForm2({ section, onInputChange, sectionKey,
             <div className="mt-3">
               <label className="block text-xs text-gray-600 mb-2">Image Preview:</label>
               <div className="w-full h-32 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                <img
+                <Image
                   src={getImageSrc(section.image)} 
                   alt="Section preview" 
+                  width={400}
+                  height={128}
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     console.error('❌ Custom section image load error:', {

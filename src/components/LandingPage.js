@@ -180,20 +180,26 @@ export default function LandingPage() {
               <div className="flex items-center space-x-6 justify-center">
                 <div className="flex -space-x-2">
                  
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face&auto=format" 
                     alt="User 2" 
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white object-cover"
                   />
               
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face&auto=format" 
                     alt="User 4" 
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white object-cover"
                   />
-                  <img 
+                  <Image 
                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face&auto=format" 
                     alt="User 5" 
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border-2 border-white object-cover"
                   />
                 </div>

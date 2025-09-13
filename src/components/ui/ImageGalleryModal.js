@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { getImageSrc } from '@/utils/imageUtils';
 import { deleteImage } from '@/services/imageUploadService';
@@ -232,9 +233,11 @@ export default function ImageGalleryModal({
                   }`}
                 >
                   <div className="aspect-square">
-                    <img
+                    <Image
                       src={getImageSrc(image)}
                       alt={`Uploaded image ${index + 1}`}
+                      width={200}
+                      height={200}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         console.error('❌ Gallery image load error:', {

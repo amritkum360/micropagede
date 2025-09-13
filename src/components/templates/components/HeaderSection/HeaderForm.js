@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
 import ImageGalleryModal from '../../../ui/ImageGalleryModal';
@@ -177,9 +178,11 @@ export default function HeaderForm({ section, onInputChange, sectionKey = 'heade
             <div className="mt-3">
               <label className="block text-xs text-gray-600 mb-2">Logo Preview:</label>
               <div className="w-24 h-14 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                <img
+                <Image
                   src={getImageSrc(section.logo)} 
                   alt="Logo preview" 
+                  width={96}
+                  height={56}
                   className="w-full h-full object-contain"
                   onError={(e) => {
                     console.error('❌ Image load error:', {

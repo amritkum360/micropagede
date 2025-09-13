@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadImageToServer, isImageUploaded, getImageSrc, getImageMetadata } from '@/utils/imageUtils';
 import ImageGalleryModal from '../../../ui/ImageGalleryModal';
@@ -265,9 +266,11 @@ export default function ServicesForm({ section, onInputChange, sectionKey = 'ser
                         <div className="mt-2">
                           <label className="block text-xs text-gray-600 mb-1">Image Preview:</label>
                           <div className="w-20 h-16 border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-                            <img
+                            <Image
                               src={getImageSrc(service.image)} 
                               alt="Service preview" 
+                              width={80}
+                              height={64}
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 console.error('❌ Service image load error:', {

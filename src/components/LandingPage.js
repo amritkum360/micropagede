@@ -167,27 +167,39 @@ export default function LandingPage() {
                    {isAuthenticated ? 'Go to Dashboard' : 'Start Building Free'}
                  </button>
                  <button className="flex items-center space-x-3 text-gray-600 hover:text-gray-900 group justify-center" style={{fontFamily: "'Inter', 'Segoe UI', sans-serif"}}>
-                   <span className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-all duration-200">
+                   {/* <span className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-200 transition-all duration-200">
                      <svg className="w-6 h-6 text-sky-600" fill="currentColor" viewBox="0 0 20 20">
                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                      </svg>
-                   </span>
-                   <span className="text-lg font-medium">Watch Demo</span>
+                   </span> */}
+                   {/* <span className="text-lg font-medium">Watch Demo</span> */}
                  </button>
               </div>
 
               {/* Social Proof */}
               <div className="flex items-center space-x-6 justify-center">
                 <div className="flex -space-x-2">
-                  <div className="w-10 h-10 bg-sky-500 rounded-full border-2 border-white"></div>
-                  <div className="w-10 h-10 bg-blue-500 rounded-full border-2 border-white"></div>
-                  <div className="w-10 h-10 bg-green-500 rounded-full border-2 border-white"></div>
-                  <div className="w-10 h-10 bg-yellow-500 rounded-full border-2 border-white"></div>
-                  <div className="w-10 h-10 bg-red-500 rounded-full border-2 border-white"></div>
+                 
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face&auto=format" 
+                    alt="User 2" 
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
+              
+                  <img 
+                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face&auto=format" 
+                    alt="User 4" 
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
+                  <img 
+                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face&auto=format" 
+                    alt="User 5" 
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
                 </div>
                 <div className="text-gray-500">
                   <span className="text-yellow-400">★★★★★</span>
-                  <span className="ml-2">2,847 makers building faster</span>
+                  <span className="ml-2">847 makers building faster</span>
                 </div>
               </div>
             </div>
@@ -867,20 +879,22 @@ export default function LandingPage() {
               <div>
                 <h4 className="font-bold text-xl mb-6">Product</h4>
                 <ul className="space-y-3 text-gray-400 text-lg">
-                  <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Sections</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Elements</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
+                  <li><a href="/auth" className="hover:text-white transition-colors">Get Started</a></li>
+                  <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                  <li><a href="#templates" className="hover:text-white transition-colors">Templates</a></li>
+                  <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
                 </ul>
               </div>
               
               <div>
-                <h4 className="font-bold text-xl mb-6">Support</h4>
+                <h4 className="font-bold text-xl mb-6">Legal & Support</h4>
                 <ul className="space-y-3 text-gray-400 text-lg">
-                  <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Tutorials</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                  <li><a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                  <li><a href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</a></li>
+                  <li><a href="/refund-policy" className="hover:text-white transition-colors">Refund Policy</a></li>
+                  <li><a href="/shipping-policy" className="hover:text-white transition-colors">Shipping Policy</a></li>
+                  <li><a href="/cancellation-policy" className="hover:text-white transition-colors">Cancellation Policy</a></li>
+                  <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
                 </ul>
               </div>
             </div>

@@ -25,7 +25,7 @@ export default function CustomDomainPage({ params }) {
       
       // For VPS setup, the backend directly serves the website data
       // We need to make a request to the backend API
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
       const response = await fetch(`${API_BASE_URL}/websites/custom-domain/${encodeURIComponent(domain)}`);
       
       if (!response.ok) {

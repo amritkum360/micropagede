@@ -39,7 +39,7 @@ function ResetPasswordForm() {
 
   const validateToken = async (resetToken) => {
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
       const response = await fetch(`${API_BASE_URL}/auth/validate-reset-token`, {
         method: 'POST',
         headers: {
@@ -104,7 +104,7 @@ function ResetPasswordForm() {
     setError('');
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
       const response = await fetch(`${API_BASE_URL}/auth/reset-password-with-token`, {
         method: 'POST',
         headers: {

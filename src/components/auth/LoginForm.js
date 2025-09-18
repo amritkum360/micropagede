@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword, isLoading }) => {
   const [formData, setFormData] = useState({
@@ -110,9 +111,14 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword, isLoading })
         <div className="max-w-lg w-full">
           {/* Header Section */}
           <div className="text-center mb-8">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mb-6 text-4xl">
-              🔑
-            </div>
+          <Image
+              src="/logo.PNG" 
+              alt="AboutWebsite Logo" 
+              width={32}
+              height={32}
+              className="w-32 h-14 object-contain mx-auto"
+              unoptimized={true}
+            />
             <h1 className="text-4xl font-bold text-gray-900 mb-3 font-heading">
               Welcome Back
             </h1>

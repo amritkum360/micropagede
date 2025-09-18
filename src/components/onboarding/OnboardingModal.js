@@ -5,6 +5,7 @@ import { X, Check, Globe, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
 import useNotification from '@/hooks/useNotification';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateWebsiteContent } from '@/services/aiService';
+import Image from 'next/image';
 
 const OnboardingModal = ({ isOpen, onComplete, user }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -245,10 +246,15 @@ const OnboardingModal = ({ isOpen, onComplete, user }) => {
         {/* Header */}
         <div className="px-6 py-6 border-b border-gray-100">
           <div className="text-center">
-            <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Globe className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">Welcome to MicroPage</h2>
+          <Image
+              src="/logo.PNG" 
+              alt="AboutWebsite Logo" 
+              width={32}
+              height={32}
+              className="w-32 h-14 object-contain mx-auto"
+              unoptimized={true}
+            />
+            <h2 className="text-xl font-semibold text-gray-900 mb-1">Welcome to AboutWebsite</h2>
             <p className="text-sm text-gray-600">Let&apos;s create your amazing website</p>
             <div className="mt-4">
               <div className="text-xs text-gray-500 mb-1">Step {currentStep} of 2</div>

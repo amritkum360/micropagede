@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "MicroPage - Single Page Website Builder",
+  title: "AboutWebsite - Single Page Website Builder",
   description: "Create beautiful single-page websites with our easy-to-use builder",
 };
 

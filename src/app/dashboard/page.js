@@ -29,15 +29,18 @@ import useNotification from '@/hooks/useNotification';
 import NotificationContainer from '@/components/ui/NotificationContainer';
 import CelebrationAnimation from '@/components/ui/CelebrationAnimation';
 import LoadingIndicator from '@/components/ui/LoadingIndicator';
+import Image from 'next/image';
 
 function DashboardContent() {
   const { user, logout, getWebsites, deleteWebsite, publishWebsite, unpublishWebsite, updateWebsite, getDomains, saveDomain, updateDomain, checkDomainDNS, getWebsite, checkCustomDomain, requestSSL, getSSLStatus } = useAuth();
   const { navigateWithLoader } = useNavigation();
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [publishingId, setPublishingId] = useState(null);
   const [unpublishingId, setUnpublishingId] = useState(null);
+  const [isOperationInProgress, setIsOperationInProgress] = useState(false);
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [selectedWebsite, setSelectedWebsite] = useState(null);
   const [customDomain, setCustomDomain] = useState('');
@@ -72,26 +75,53 @@ function DashboardContent() {
 
   const router = useRouter();
 
-  const loadWebsites = useCallback(async () => {
+  const loadWebsites = useCallback(async (isInitialLoad = false) => {
     try {
       console.log('🔄 Loading websites for user:', user?.id);
       const userWebsites = await getWebsites();
       console.log('✅ Loaded websites:', userWebsites);
       console.log('📊 Number of websites:', userWebsites?.length || 0);
       setWebsites(userWebsites || []);
+      
+      if (isInitialLoad) {
+        setInitialLoadComplete(true);
+      }
     } catch (error) {
       console.error('❌ Failed to load websites:', error);
       setWebsites([]);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+      }
     }
   }, [getWebsites, user?.id]);
 
+  // Manual refresh function for user actions with debouncing
+  const refreshWebsites = useCallback(async () => {
+    if (initialLoadComplete && !isOperationInProgress) {
+      await loadWebsites(false);
+    }
+  }, [loadWebsites, initialLoadComplete, isOperationInProgress]);
+
+  // Combined effect to handle all initial loading
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user.id && !initialLoadComplete) {
       console.log('🔄 Dashboard mounted, loading data for user:', user.id);
-      loadWebsites();
-      loadSubscription();
+      console.log('⚡ Optimized loading: Single API call instead of multiple');
+      
+      // Load data only once when user is available
+      const loadData = async () => {
+        try {
+          await Promise.all([
+            loadWebsites(true), // Pass true for initial load
+            loadSubscription()
+          ]);
+        } catch (error) {
+          console.error('Error loading dashboard data:', error);
+        }
+      };
+      
+      loadData();
       
       // Trigger celebration animation only once when dashboard first opens
       if (!celebrationShown.current) {
@@ -103,15 +133,7 @@ function DashboardContent() {
         return () => clearTimeout(celebrationTimer);
       }
     }
-  }, [user, loadWebsites, loadSubscription]); // Include user to fix exhaustive-deps warning
-
-  // Refresh websites when user onboarding status changes
-  useEffect(() => {
-    if (user && user.onboardingCompleted && user.id) {
-      console.log('🔄 User onboarding completed, refreshing websites...');
-      loadWebsites();
-    }
-  }, [user, loadWebsites]);
+  }, [user?.id, initialLoadComplete]); // Only depend on user.id and initialLoadComplete
 
   const handleLogout = () => {
     logout();
@@ -139,6 +161,9 @@ function DashboardContent() {
   };
 
   const handleDeleteWebsite = async (websiteId) => {
+    if (isOperationInProgress) return; // Prevent multiple operations
+    
+    setIsOperationInProgress(true);
     setDeletingId(websiteId);
     try {
       await deleteWebsite(websiteId);
@@ -149,10 +174,14 @@ function DashboardContent() {
       showError('❌ Failed to delete website. Please try again.');
     } finally {
       setDeletingId(null);
+      setIsOperationInProgress(false);
     }
   };
 
   const handlePublishWebsite = async (websiteId) => {
+    if (isOperationInProgress) return; // Prevent multiple operations
+    
+    setIsOperationInProgress(true);
     setPublishingId(websiteId);
     try {
       const result = await publishWebsite(websiteId);
@@ -171,10 +200,14 @@ function DashboardContent() {
       }
     } finally {
       setPublishingId(null);
+      setIsOperationInProgress(false);
     }
   };
 
   const handleUnpublishWebsite = async (websiteId) => {
+    if (isOperationInProgress) return; // Prevent multiple operations
+    
+    setIsOperationInProgress(true);
     setUnpublishingId(websiteId);
     try {
       await unpublishWebsite(websiteId);
@@ -189,6 +222,7 @@ function DashboardContent() {
       showError('❌ Failed to unpublish website. Please try again.');
     } finally {
       setUnpublishingId(null);
+      setIsOperationInProgress(false);
     }
   };
 
@@ -481,7 +515,7 @@ function DashboardContent() {
     });
   };
 
-  if (loading) {
+  if (loading || !initialLoadComplete) {
     return <LoadingIndicator text="Loading your dashboard..." />;
   }
 
@@ -506,9 +540,14 @@ function DashboardContent() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">AboutWebsite Dashboard</h1>
-            </div>
+          <Image
+              src="/logo.PNG" 
+              alt="AboutWebsite Logo" 
+              width={32}
+              height={32}
+              className="w-32 h-14 object-contain"
+              unoptimized={true}
+            />
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigateWithLoader(router, '/profile')}

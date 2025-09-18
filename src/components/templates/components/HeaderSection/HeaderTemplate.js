@@ -30,7 +30,7 @@ export default function HeaderTemplate({ section, businessName, tagline }) {
                 alt={businessName} 
                 width={48}
                 height={48}
-                className="w-10 h-10 md:w-12 md:h-12 object-contain" 
+                className="w-40 h-10 md:w-12 md:h-12 object-contain" 
               />
             )}
             <div>

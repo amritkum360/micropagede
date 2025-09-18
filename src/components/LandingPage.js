@@ -27,10 +27,14 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100/20 px-6 py-2 backdrop-blur-md bg-white/80">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl" style={{fontFamily: "'Inter', 'Segoe UI', sans-serif"}}>M</span>
-            </div>
-            <span className="text-2xl font-bold" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
+            <Image 
+              src="/logo.PNG" 
+              alt="AboutWebsite Logo" 
+              width={32}
+              height={32}
+              className="w-32 h-14 object-contain"
+              unoptimized={true}
+            />
           </div>
           
           {/* Desktop Menu */}
@@ -178,7 +182,7 @@ export default function LandingPage() {
 
               {/* Social Proof */}
               <div className="flex items-center space-x-6 justify-center">
-                <div className="flex -space-x-2">
+                {/* <div className="flex -space-x-2">
                  
                   <Image 
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face&auto=format" 
@@ -202,7 +206,7 @@ export default function LandingPage() {
                     height={40}
                     className="w-10 h-10 rounded-full border-2 border-white object-cover"
                   />
-                </div>
+                </div> */}
                 <div className="text-gray-500">
                   <span className="text-yellow-400">★★★★★</span>
                   <span className="ml-2">847 makers building faster</span>
@@ -871,10 +875,14 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12">
             <div>
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">M</span>
-                </div>
-                 <span className="text-2xl font-bold" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>AboutWebsite</span>
+              <Image 
+              src="/logo.PNG" 
+              alt="AboutWebsite Logo" 
+              width={32}
+              height={32}
+              className="w-32 h-14 object-contain"
+              unoptimized={true}
+            />
               </div>
               <p className="text-gray-400 text-lg leading-relaxed">
                 Helping professionals tell their story with simple, beautiful one-page websites.

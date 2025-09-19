@@ -540,6 +540,7 @@ function DashboardContent() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
+          <Link href="/" passHref>
           <Image
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -548,6 +549,7 @@ function DashboardContent() {
               className="w-32 h-14 object-contain"
               unoptimized={true}
             />
+            </Link>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigateWithLoader(router, '/profile')}

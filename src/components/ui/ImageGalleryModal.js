@@ -34,8 +34,11 @@ export default function ImageGalleryModal({
     try {
       console.log('🖼️ Fetching user images...');
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-images`, {
-        method: 'GET',
+      // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user-images`, {
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aboutwebsite.in/api';
+        const response = await fetch(`${API_BASE_URL}/user-images`, {
+   
+      method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

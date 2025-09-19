@@ -27,14 +27,15 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100/20 px-6 py-2 backdrop-blur-md bg-white/80">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Image 
+          <Link href="/" passHref>
+          <Image 
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
               width={32}
               height={32}
               className="w-32 h-14 object-contain"
               unoptimized={true}
-            />
+            /></Link>
           </div>
           
           {/* Desktop Menu */}
@@ -875,6 +876,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 gap-12">
             <div>
               <div className="flex items-center space-x-3 mb-6">
+              <Link href="/" passHref>
               <Image 
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -882,7 +884,7 @@ export default function LandingPage() {
               height={32}
               className="w-32 h-14 object-contain"
               unoptimized={true}
-            />
+            /></Link>
               </div>
               <p className="text-gray-400 text-lg leading-relaxed">
                 Helping professionals tell their story with simple, beautiful one-page websites.

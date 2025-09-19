@@ -246,6 +246,7 @@ const OnboardingModal = ({ isOpen, onComplete, user }) => {
         {/* Header */}
         <div className="px-6 py-6 border-b border-gray-100">
           <div className="text-center">
+          <Link href="/" passHref>
           <Image
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -253,7 +254,7 @@ const OnboardingModal = ({ isOpen, onComplete, user }) => {
               height={32}
               className="w-32 h-14 object-contain mx-auto"
               unoptimized={true}
-            />
+            /></Link>
             <h2 className="text-xl font-semibold text-gray-900 mb-1">Welcome to AboutWebsite</h2>
             <p className="text-sm text-gray-600">Let&apos;s create your amazing website</p>
             <div className="mt-4">

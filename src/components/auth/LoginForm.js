@@ -111,6 +111,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword, isLoading })
         <div className="max-w-lg w-full">
           {/* Header Section */}
           <div className="text-center mb-8">
+          <Link href="/" passHref>
           <Image
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -118,7 +119,7 @@ const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword, isLoading })
               height={32}
               className="w-32 h-14 object-contain mx-auto"
               unoptimized={true}
-            />
+            /></Link>
             <h1 className="text-4xl font-bold text-gray-900 mb-3 font-heading">
               Welcome Back
             </h1>

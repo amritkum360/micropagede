@@ -12,6 +12,7 @@ export default function PrivacyPolicy() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+            <Link href="/" passHref>
             <Image
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -20,6 +21,7 @@ export default function PrivacyPolicy() {
               className="w-32 h-14 object-contain"
               unoptimized={true}
             />
+            </Link>
             </div>
             <Link 
               href="/" 

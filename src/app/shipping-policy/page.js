@@ -12,6 +12,7 @@ export default function ShippingPolicy() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
+            <Link href="/" passHref>
             <Image 
               src="/logo.PNG" 
               alt="AboutWebsite Logo" 
@@ -19,7 +20,7 @@ export default function ShippingPolicy() {
               height={32}
               className="w-32 h-14 object-contain"
               unoptimized={true}
-            />            </div>
+            />   </Link>         </div>
             <Link 
               href="/" 
               className="px-6 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:from-sky-600 hover:to-sky-700 transition-all duration-300 font-medium"

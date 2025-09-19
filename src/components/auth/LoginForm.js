@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const LoginForm = ({ onLogin, onSwitchToRegister, onForgotPassword, isLoading }) => {
   const [formData, setFormData] = useState({

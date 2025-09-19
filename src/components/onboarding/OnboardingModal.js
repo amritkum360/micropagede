@@ -6,6 +6,7 @@ import useNotification from '@/hooks/useNotification';
 import { useAuth } from '@/contexts/AuthContext';
 import { generateWebsiteContent } from '@/services/aiService';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const OnboardingModal = ({ isOpen, onComplete, user }) => {
   const [currentStep, setCurrentStep] = useState(1);

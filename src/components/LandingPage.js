@@ -155,7 +155,7 @@ export default function LandingPage() {
           <div className="text-center max-w-4xl mx-auto">
             {/* Hero Content */}
             <div>
-              <Header>
+              <header>
               <div className="inline-flex items-center px-4 py-2 bg-sky-100 text-sky-800 rounded-full text-sm font-medium mb-8 border border-sky-200">
                 🚀 India&apos;s Simplest AI Website Builder
               </div>
@@ -167,7 +167,7 @@ export default function LandingPage() {
                 If you&apos;re a Doctor/CA/Influencer/Student/Store owner or anyone, we believe you need one page - all about you. 
                 Own your aboutwebsite.in or connect your domain.
               </p>
-              </Header>
+              </header>
               <div className="flex flex-col sm:flex-row gap-6 mb-12 justify-center">
                  <button onClick={handleGetStarted} className="bg-blue-600 text-white px-10 py-5 rounded-xl text-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1" style={{fontFamily: "'Inter', 'Segoe UI', sans-serif"}}>
                    {isAuthenticated ? 'Go to Dashboard' : 'Start Building Free'}

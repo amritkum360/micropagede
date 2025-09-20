@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Analytics from '@/components/Analytics';
 
 export default function SubdomainLayout({ children }) {
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function SubdomainLayout({ children }) {
 
   return (
     <div className="subdomain-layout">
+      <Analytics />
       {children}
     </div>
   );

@@ -1,0 +1,57 @@
+{
+  "name": "AboutWebsite - AI Website Builder",
+  "short_name": "AboutWebsite",
+  "description": "India's simplest AI website builder for creating professional single-page websites",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-IN",
+  "categories": ["productivity", "business", "utilities"],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.PNG",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Website",
+      "short_name": "Create",
+      "description": "Start building your website",
+      "url": "/auth",
+      "icons": [
+        {
+          "src": "/logo.PNG",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Access your dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/logo.PNG",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

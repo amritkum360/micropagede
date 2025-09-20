@@ -1,0 +1,50 @@
+# Robots.txt for AboutWebsite.in
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /profile/
+Disallow: /builder/
+Disallow: /reset-password/
+Disallow: /custom-domain/
+Disallow: /subdomain/
+
+# Allow important pages
+Allow: /
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-of-service
+Allow: /refund-policy
+Allow: /shipping-policy
+Allow: /cancellation-policy
+Allow: /published/*
+
+# Sitemap location
+Sitemap: https://aboutwebsite.in/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Specific bot instructions
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

@@ -24,7 +24,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100/20 px-6 py-2 backdrop-blur-md bg-white/80">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-100/20 px-6 py-2 backdrop-blur-md bg-white/80" role="navigation" aria-label="Main navigation">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
           <Link href="/" passHref>
@@ -150,15 +150,16 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="px-6 pt-32 pb-24 bg-white">
+      <section className="px-6 pt-32 pb-24 bg-white" aria-labelledby="hero-heading">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
             {/* Hero Content */}
             <div>
+              <Header>
               <div className="inline-flex items-center px-4 py-2 bg-sky-100 text-sky-800 rounded-full text-sm font-medium mb-8 border border-sky-200">
                 🚀 India&apos;s Simplest AI Website Builder
               </div>
-              <h1 className="text-6xl md:text-6xl font-bold mb-8 leading-tight tracking-tight" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>
+              <h1 id="hero-heading" className="text-6xl md:text-6xl font-bold mb-8 leading-tight tracking-tight" style={{fontFamily: "'Playfair Display', 'Georgia', serif"}}>
                 Your story. Your website.
                 <span className="block text-sky-500">In minutes. Made simple.</span>
               </h1>
@@ -166,7 +167,7 @@ export default function LandingPage() {
                 If you&apos;re a Doctor/CA/Influencer/Student/Store owner or anyone, we believe you need one page - all about you. 
                 Own your aboutwebsite.in or connect your domain.
               </p>
-              
+              </Header>
               <div className="flex flex-col sm:flex-row gap-6 mb-12 justify-center">
                  <button onClick={handleGetStarted} className="bg-blue-600 text-white px-10 py-5 rounded-xl text-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1" style={{fontFamily: "'Inter', 'Segoe UI', sans-serif"}}>
                    {isAuthenticated ? 'Go to Dashboard' : 'Start Building Free'}

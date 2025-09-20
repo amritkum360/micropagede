@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://aboutwebsite.in'),
   title: "AboutWebsite - India's Simplest AI Website Builder | Create Your Professional Website in Minutes",
   description: "Build your professional 'About Me' website in minutes with AI. Perfect for doctors, CAs, students, influencers & professionals. No coding required. Get your aboutwebsite.in domain or connect custom domain.",
   keywords: "website builder, AI website builder, about me website, professional website, single page website, portfolio website, doctor website, CA website, student portfolio, influencer website, no code website builder, India website builder",
@@ -23,7 +24,6 @@ export const metadata = {
   creator: "AboutWebsite",
   publisher: "AboutWebsite",
   robots: "index, follow",
-  viewport: "width=device-width, initial-scale=1",
   
   // Open Graph / Facebook
   openGraph: {
@@ -82,6 +82,11 @@ export const metadata = {
     "theme-color": "#0ea5e9",
     "msapplication-TileColor": "#0ea5e9",
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {

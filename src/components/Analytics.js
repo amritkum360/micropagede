@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
+import Image from 'next/image';
 
 export default function Analytics() {
   const pathname = usePathname();
@@ -90,12 +91,13 @@ export default function Analytics() {
         `}
       </Script>
       <noscript>
-        <img
-          height="1"
-          width="1"
+        <Image
+          height={1}
+          width={1}
           style={{ display: 'none' }}
           src="https://www.facebook.com/tr?id=FACEBOOK_PIXEL_ID&ev=PageView&noscript=1"
           alt=""
+          unoptimized
         />
       </noscript>
     </>

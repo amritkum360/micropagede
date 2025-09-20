@@ -133,7 +133,7 @@ function DashboardContent() {
         return () => clearTimeout(celebrationTimer);
       }
     }
-  }, [user?.id, initialLoadComplete]); // Only depend on user.id and initialLoadComplete
+  }, [user, initialLoadComplete]); // Include all dependencies
 
   const handleLogout = () => {
     logout();

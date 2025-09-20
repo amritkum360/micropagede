@@ -44,12 +44,10 @@ const nextConfig = {
   // Enable compression
   compress: true,
   
-  // Enable SWC minification
-  swcMinify: true,
-  
   // Enable experimental features for better performance
   experimental: {
-    optimizeCss: true,
+    // Temporarily disabled optimizeCss due to critters module issues
+    // optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@heroicons/react'],
   },
   

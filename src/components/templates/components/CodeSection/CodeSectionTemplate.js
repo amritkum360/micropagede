@@ -1,6 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+
+// Component to handle script execution
+function ScriptExecutor({ script }) {
+  useEffect(() => {
+    try {
+      eval(script);
+    } catch (error) {
+      console.error('Script execution error:', error);
+    }
+  }, [script]);
+
+  return null;
+}
 
 export default function CodeSectionTemplate({ section }) {
   if (!section || section.visible === false) return null;
@@ -58,16 +71,26 @@ export default function CodeSectionTemplate({ section }) {
     }
 
     try {
-      // Render the custom code directly without wrapper to avoid CSS conflicts
+      // Extract script content for later execution
+      const scriptMatch = section.code.match(/<script>([\s\S]*?)<\/script>/);
+      
+      // Remove script tags from HTML for rendering
+      const htmlWithoutScript = section.code.replace(/<script>[\s\S]*?<\/script>/g, '');
+      
       return (
-        <div 
-          dangerouslySetInnerHTML={{ __html: section.code }}
-          style={{
-            fontSize: 'inherit',
-            lineHeight: 'inherit',
-            fontFamily: 'inherit'
-          }}
-        />
+        <div>
+          <div 
+            dangerouslySetInnerHTML={{ __html: htmlWithoutScript }}
+            style={{
+              fontSize: 'inherit',
+              lineHeight: 'inherit',
+              fontFamily: 'inherit'
+            }}
+          />
+          {scriptMatch && (
+            <ScriptExecutor script={scriptMatch[1]} />
+          )}
+        </div>
       );
     } catch (error) {
       return (
@@ -102,6 +125,12 @@ export default function CodeSectionTemplate({ section }) {
       </div>
       
       <div className="relative z-10">
+        {/* Show title if it exists */}
+        {section.title && (
+          <div className="py-8 px-4 text-center">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{section.title}</h2>
+          </div>
+        )}
         {renderCustomCode()}
       </div>
     </section>

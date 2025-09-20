@@ -259,9 +259,6 @@ export default function UniversalTemplate({ data, sectionOrder = null }) {
         return <PopupTemplate section={section} />;
 	
 
-	      case 'codeSection':
-        return <CodeSectionTemplate section={section} />;
-
       default:
         // Check if it's a custom section
         if (sectionKey.startsWith('customSection_')) {

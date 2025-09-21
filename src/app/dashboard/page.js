@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useRouter } from 'next/navigation';
@@ -37,6 +37,12 @@ function DashboardContent() {
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState({
+    websites: false,
+    subscription: false,
+    dns: {},
+    ssl: {}
+  });
   const [deletingId, setDeletingId] = useState(null);
   const [publishingId, setPublishingId] = useState(null);
   const [unpublishingId, setUnpublishingId] = useState(null);
@@ -78,6 +84,7 @@ function DashboardContent() {
   const loadWebsites = useCallback(async (isInitialLoad = false) => {
     try {
       console.log('🔄 Loading websites for user:', user?.id);
+      setIsLoading(prev => ({ ...prev, websites: true }));
       const userWebsites = await getWebsites();
       console.log('✅ Loaded websites:', userWebsites);
       console.log('📊 Number of websites:', userWebsites?.length || 0);
@@ -90,6 +97,7 @@ function DashboardContent() {
       console.error('❌ Failed to load websites:', error);
       setWebsites([]);
     } finally {
+      setIsLoading(prev => ({ ...prev, websites: false }));
       if (isInitialLoad) {
         setLoading(false);
       }
@@ -112,12 +120,16 @@ function DashboardContent() {
       // Load data only once when user is available
       const loadData = async () => {
         try {
+          setLoading(true);
           await Promise.all([
             loadWebsites(true), // Pass true for initial load
             loadSubscription()
           ]);
+          setInitialLoadComplete(true);
         } catch (error) {
           console.error('Error loading dashboard data:', error);
+        } finally {
+          setLoading(false);
         }
       };
       
@@ -133,7 +145,7 @@ function DashboardContent() {
         return () => clearTimeout(celebrationTimer);
       }
     }
-  }, [user, initialLoadComplete]); // Include all dependencies
+  }, [user, initialLoadComplete, loadWebsites, loadSubscription]); // Fixed dependencies
 
   const handleLogout = () => {
     logout();
@@ -355,8 +367,10 @@ function DashboardContent() {
       setSelectedWebsite(null);
       setCustomDomain('');
       showSuccess('✅ Custom domain added successfully!');
-      // Refresh the page to reflect latest DNS status and domain state
-      router.refresh?.();
+      // Trigger DNS check for the newly added domain
+      setTimeout(() => {
+        handleCheckDNS(selectedWebsite._id, customDomain.trim());
+      }, 1000);
     } catch (error) {
       console.error('Failed to add custom domain:', error);
       showError('❌ Failed to add custom domain. Please try again.');
@@ -416,8 +430,17 @@ function DashboardContent() {
       });
 
       showSuccess('✅ Custom domain removed successfully!');
-      // Refresh the page to clear DNS status and domain state
-      router.refresh?.();
+      // Clear DNS and SSL status for this website
+      setDnsStatus(prev => {
+        const newStatus = { ...prev };
+        delete newStatus[websiteId];
+        return newStatus;
+      });
+      setSslStatus(prev => {
+        const newStatus = { ...prev };
+        delete newStatus[websiteId];
+        return newStatus;
+      });
     } catch (error) {
       console.error('Failed to remove custom domain:', error);
       showError('❌ Failed to remove custom domain. Please try again.');
@@ -426,6 +449,7 @@ function DashboardContent() {
 
   const handleCheckDNS = useCallback(async (websiteId, domain) => {
     setCheckingDNS(prev => ({ ...prev, [websiteId]: true }));
+    setIsLoading(prev => ({ ...prev, dns: { ...prev.dns, [websiteId]: true } }));
     
     try {
       const result = await checkDomainDNS(domain);
@@ -444,11 +468,13 @@ function DashboardContent() {
       }));
     } finally {
       setCheckingDNS(prev => ({ ...prev, [websiteId]: false }));
+      setIsLoading(prev => ({ ...prev, dns: { ...prev.dns, [websiteId]: false } }));
     }
   }, [checkDomainDNS]);
 
   const handleRequestSSL = useCallback(async (websiteId, domain) => {
     setRequestingSSL(prev => ({ ...prev, [websiteId]: true }));
+    setIsLoading(prev => ({ ...prev, ssl: { ...prev.ssl, [websiteId]: true } }));
     
     try {
       const result = await requestSSL(websiteId, domain);
@@ -465,6 +491,7 @@ function DashboardContent() {
       showError('❌ Failed to request SSL certificate. Please try again.');
     } finally {
       setRequestingSSL(prev => ({ ...prev, [websiteId]: false }));
+      setIsLoading(prev => ({ ...prev, ssl: { ...prev.ssl, [websiteId]: false } }));
     }
   }, [requestSSL, showSuccess, showError]);
 
@@ -479,32 +506,34 @@ function DashboardContent() {
     }
   }, [getSSLStatus]);
 
-  // Auto-check DNS status after websites load
+  // Auto-check DNS status after websites load with debouncing
   useEffect(() => {
     if (websites.length > 0) {
-      websites.forEach(website => {
-        if (website.data?.customDomain && !dnsStatus[website._id]) {
-          // Delay DNS check to avoid blocking page load
-          setTimeout(() => {
+      const checkDnsAndSsl = async () => {
+        for (const website of websites) {
+          // Check DNS status with debouncing
+          if (website.data?.customDomain && !dnsStatus[website._id]) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
             handleCheckDNS(website._id, website.data.customDomain);
-          }, 2000); // 2 second delay
-        }
-        
-        // Check SSL status for custom domains
-        if (website.data?.customDomain && !sslStatus[website._id]) {
-          setTimeout(async () => {
+          }
+          
+          // Check SSL status with debouncing
+          if (website.data?.customDomain && !sslStatus[website._id]) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
             const sslResult = await checkSSLStatus(website.data.customDomain);
             setSslStatus(prev => ({
               ...prev,
               [website._id]: sslResult
             }));
-          }, 3000); // 3 second delay
+          }
         }
-      });
-    }
-  }, [websites, dnsStatus, sslStatus, handleCheckDNS, checkSSLStatus]);
+      };
 
-  const formatDate = (dateString) => {
+      checkDnsAndSsl();
+    }
+  }, [websites]); // Only depend on websites to prevent excessive re-runs
+
+  const formatDate = useCallback((dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '-';
@@ -513,7 +542,93 @@ function DashboardContent() {
       month: 'short',
       day: 'numeric'
     });
-  };
+  }, []);
+
+  // Memoized website card component to prevent unnecessary re-renders
+  const WebsiteCard = useMemo(() => {
+    return ({ website, index }) => (
+      <div key={website._id || `website-${index}`} className="bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] w-full mb-6 last:mb-0 overflow-hidden">
+        {/* Card Header */}
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 relative overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-10 -right-10 w-16 h-16 bg-gradient-to-br from-yellow-200 to-orange-300 rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-8 -left-8 w-12 h-12 bg-gradient-to-br from-pink-200 to-purple-300 rounded-full opacity-20 animate-bounce"></div>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 font-heading">{website.name}</h2>
+            </div>
+            <div className="sm:ml-6 flex items-center gap-3 relative z-20">
+              {website.isPublished ? (
+                <span className="inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 shadow-md animate-pulse">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></div>
+                  🚀 Live
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-amber-100 text-yellow-800 border border-yellow-200 shadow-md">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                  ⏳ Not Live
+                </span>
+              )}
+              
+              {website.isPublished ? (
+                <button
+                  onClick={() => handleUnpublishWebsite(website._id)}
+                  disabled={unpublishingId === website._id}
+                  className="inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-lg text-orange-700 bg-gradient-to-r from-white to-orange-50 hover:from-orange-50 hover:to-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50"
+                >
+                  {unpublishingId === website._id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-orange-700 mr-1"></div>
+                      Unpublishing...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="h-3 w-3 mr-1" />
+                      ⏸️ Unpublish
+                    </>
+                  )}
+                </button>
+              ) : subscription ? (
+                <button
+                  onClick={() => {
+                    console.log('Publish button clicked for website:', website._id);
+                    handlePublishWebsite(website._id);
+                  }}
+                  disabled={publishingId === website._id}
+                  className="inline-flex items-center px-3 py-1.5 border border-green-300 text-xs font-medium rounded-lg text-green-700 bg-gradient-to-r from-white to-green-50 hover:from-green-50 hover:to-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer relative z-10"
+                  style={{ position: 'relative', zIndex: 10 }}
+                >
+                  {publishingId === website._id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-green-700 mr-1"></div>
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="h-3 w-3 mr-1" />
+                      🚀 Publish
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button
+                  onClick={handleShowSubscriptionModal}
+                  className="inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-lg text-orange-700 bg-gradient-to-r from-white to-orange-50 hover:from-orange-50 hover:to-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg cursor-pointer relative z-10"
+                  style={{ position: 'relative', zIndex: 10 }}
+                >
+                  <CreditCard className="h-3 w-3 mr-1" />
+                  💳 Subscribe to Publish
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        {/* Rest of the website card content would go here */}
+      </div>
+    );
+  }, [handleUnpublishWebsite, handlePublishWebsite, handleShowSubscriptionModal, subscription, unpublishingId, publishingId]);
 
   if (loading || !initialLoadComplete) {
     return <LoadingIndicator text="Loading your dashboard..." />;

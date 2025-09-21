@@ -190,7 +190,7 @@ function DashboardContent() {
     }
   };
 
-  const handlePublishWebsite = async (websiteId) => {
+  const handlePublishWebsite = useCallback(async (websiteId) => {
     if (isOperationInProgress) return; // Prevent multiple operations
     
     setIsOperationInProgress(true);
@@ -214,9 +214,9 @@ function DashboardContent() {
       setPublishingId(null);
       setIsOperationInProgress(false);
     }
-  };
+  }, [isOperationInProgress, publishWebsite, websites, showSuccess, showError, handleShowSubscriptionModal]);
 
-  const handleUnpublishWebsite = async (websiteId) => {
+  const handleUnpublishWebsite = useCallback(async (websiteId) => {
     if (isOperationInProgress) return; // Prevent multiple operations
     
     setIsOperationInProgress(true);
@@ -236,7 +236,7 @@ function DashboardContent() {
       setUnpublishingId(null);
       setIsOperationInProgress(false);
     }
-  };
+  }, [isOperationInProgress, unpublishWebsite, websites, showSuccess, showError]);
 
   const handleAddDomain = (website) => {
     setSelectedWebsite(website);
@@ -531,7 +531,7 @@ function DashboardContent() {
 
       checkDnsAndSsl();
     }
-  }, [websites]); // Only depend on websites to prevent excessive re-runs
+  }, [websites, dnsStatus, sslStatus, handleCheckDNS, checkSSLStatus]); // Added missing dependencies
 
   const formatDate = useCallback((dateString) => {
     if (!dateString) return '-';
@@ -546,7 +546,7 @@ function DashboardContent() {
 
   // Memoized website card component to prevent unnecessary re-renders
   const WebsiteCard = useMemo(() => {
-    return ({ website, index }) => (
+    const MemoizedWebsiteCard = ({ website, index }) => (
       <div key={website._id || `website-${index}`} className="bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-500 transform hover:scale-[1.02] w-full mb-6 last:mb-0 overflow-hidden">
         {/* Card Header */}
         <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 relative overflow-hidden">
@@ -628,6 +628,8 @@ function DashboardContent() {
         {/* Rest of the website card content would go here */}
       </div>
     );
+    MemoizedWebsiteCard.displayName = 'MemoizedWebsiteCard';
+    return MemoizedWebsiteCard;
   }, [handleUnpublishWebsite, handlePublishWebsite, handleShowSubscriptionModal, subscription, unpublishingId, publishingId]);
 
   if (loading || !initialLoadComplete) {
